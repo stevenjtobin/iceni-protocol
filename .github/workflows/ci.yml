@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install ICENI
+        run: pip install -e ".[all]"
+
+      - name: Initialise local store
+        run: iceni init
+
+      - name: Install workflow packs
+        run: iceni pack install all
+
+      - name: Run tests
+        run: python -m pytest tests/ -v --tb=short
+
+      - name: Smoke — list workflows
+        run: iceni list | head -20
+
+      - name: Smoke — render a workflow (no API key)
+        run: iceni run review --preview --model claude
+
+      - name: Stats
+        run: iceni stats

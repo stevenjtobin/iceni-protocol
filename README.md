@@ -1,5 +1,11 @@
 # ICENI Protocol
 
+[![CI](https://github.com/stevenjtobin/iceni-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/stevenjtobin/iceni-protocol/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Workflows](https://img.shields.io/badge/workflows-208-orange)](library/CATALOG.md)
+[![Platforms](https://img.shields.io/badge/tested%20on-Claude%20%7C%20ChatGPT%20%7C%20Kimi-blueviolet)](#which-ai-platforms-are-tested-and-working)
+
 **Save your best AI instructions once. Use them everywhere — in one word.**
 
 ICENI is a reusable-workflow system for AI assistants. You write an expert prompt once, give it a name (`review`, `security-audit`, `refactor`), and from then on that word is all you type. ICENI renders the right calibrated prompt for whichever model you're using — Claude, ChatGPT, or Kimi — and produces structured, consistent output every time.
