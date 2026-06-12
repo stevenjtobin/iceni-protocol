@@ -1,0 +1,237 @@
+{
+  "name": "debugging",
+  "description": "Find and fix what's broken.",
+  "aliases": [
+    {
+      "petname": "error-explain",
+      "intent": {
+        "goal": "Explain this error and give the exact fix.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "root cause + corrected code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "stack-trace",
+      "intent": {
+        "goal": "Read this stack trace and pinpoint the cause.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "cause + fix location"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "root-cause",
+      "intent": {
+        "goal": "Do a root-cause analysis of this bug.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "5-whys + root cause"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "repro-steps",
+      "intent": {
+        "goal": "Derive minimal reproduction steps for this bug.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "numbered repro steps"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "hypotheses",
+      "intent": {
+        "goal": "List ranked hypotheses for this bug and how to test each.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "hypothesis table"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "log-points",
+      "intent": {
+        "goal": "Suggest where to add logging to diagnose this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "log-point list"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "minimal-repro",
+      "intent": {
+        "goal": "Reduce this to a minimal reproducible example.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "minimal code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "fix-verify",
+      "intent": {
+        "goal": "Given this fix, list how to verify it actually works.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "verification checklist"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "bisect-plan",
+      "intent": {
+        "goal": "Plan a git bisect to find where this broke.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "bisect plan"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "heisenbug",
+      "intent": {
+        "goal": "Reason about why this bug disappears when observed.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "analysis + approach"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "off-by-one",
+      "intent": {
+        "goal": "Check this loop/index logic for off-by-one errors.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "findings + fix"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    }
+  ]
+}

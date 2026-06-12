@@ -1,0 +1,76 @@
+Security Audit: SessionMiddleware
+
+This middleware has several serious vulnerabilities, the most severe of which allows unauthenticated remote code execution. Findings are listed roughly in order of severity.
+
+---
+
+1. CRITICAL — Remote code execution via insecure deserialization (pickle)
+   Location: line 30, `pickle.loads(base64.b64decode(raw))`
+   The session cookie's payload is unpickled. Python's pickle executes arbitrary code during
+   deserialization (via __reduce__), so any attacker who can present a validly "signed" cookie
+   can run arbitrary commands on the server. The only thing standing between an attacker and
+   pickle.loads is the MD5 signature check — and that check is defeated by the issues below
+   (hardcoded default secret, weak/length-extendable MAC). Result: unauthenticated RCE.
+   Fix: Never unpickle untrusted data. Use json for session payloads. If you must serialize
+   rich objects, use a safe, schema-validated format and never deserialize attacker-controlled
+   bytes.
+
+2. CRITICAL/HIGH — Hardcoded default secret
+   Location: line 9, `SECRET = os.environ.get("SESSION_SECRET", "changeme")`
+   If the SESSION_SECRET environment variable is not set, the signing key silently becomes the
+   well-known string "changeme". An attacker who knows (or guesses) this can forge the cookie
+   signature and reach the pickle deserializer above. The silent fallback also hides
+   misconfiguration in production.
+   Fix: Do not provide a default. Require the secret at startup and refuse to start (raise) if it
+   is missing or too short. Use a long, random key.
+
+3. HIGH — Weak signature algorithm: MD5 keyed-prefix MAC
+   Location: lines 28 and 52, `hashlib.md5((SECRET + raw)...)`
+   MD5 is broken and is not a MAC. The construction md5(secret + message) is also vulnerable to
+   length-extension attacks: given one valid (raw, sig) pair, an attacker can append data and
+   produce a valid signature without knowing the secret — again enabling cookie forgery and the
+   RCE in #1.
+   Fix: Use HMAC with a strong hash, e.g. `hmac.new(key, raw.encode(), hashlib.sha256)`.
+
+4. HIGH — Information disclosure on the error path
+   Location: lines 33-35
+   On any exception, the response body includes the exception message AND a full dump of the WSGI
+   environ (`dict(environ)`). The environ contains all request headers — including Cookie, any
+   Authorization header, X-Forwarded-For — plus server configuration and internal paths. An
+   attacker can intentionally trigger this (e.g. send malformed base64) to leak secrets and
+   internal details, and to aid exploitation of the other findings.
+   Fix: Return a generic 500 body. Log details server-side only; never echo environ or exception
+   text to the client.
+
+5. MEDIUM — Spoofable IP trust via X-Forwarded-For
+   Location: lines 18-22
+   The `is_internal` trust flag comes from the client-controlled X-Forwarded-For header. Unless a
+   trusted proxy overwrites it, any external user can send `X-Forwarded-For: 127.0.0.1` to be
+   marked internal. The allowlist is also broken: it contains the literal string
+   "10.0.0.0/8 handled upstream" (not a CIDR), and membership is tested with exact string
+   equality, so no CIDR matching happens.
+   Fix: Derive the client IP from REMOTE_ADDR (the trusted hop), or only parse XFF when the peer
+   is a known proxy. Use the `ipaddress` module for real CIDR checks. Don't let a request header
+   drive an authorization decision.
+
+6. MEDIUM — Non-constant-time signature comparison
+   Location: line 29, `if sig == expected`
+   The `==` comparison short-circuits and leaks timing, theoretically allowing signature recovery
+   for a chosen payload.
+   Fix: Use `hmac.compare_digest(sig, expected)`.
+
+7. LOW — No session expiry/binding; cookie attributes not enforced here
+   The signed cookie has no expiration or binding to a user/session id, so a captured cookie is
+   replayable forever. HttpOnly/Secure/SameSite are not visible at this layer.
+   Fix: Add a signed expiry and rotate sessions; ensure the session cookie is set with HttpOnly,
+   Secure, and SameSite.
+
+---
+
+Priority order for fixes:
+1. Replace pickle with json (kills the RCE).
+2. Require SESSION_SECRET with no default; fail closed if absent.
+3. Switch MD5 keyed-prefix to HMAC-SHA256 with constant-time comparison.
+4. Stop leaking environ/exception details on errors.
+5. Fix the IP-trust logic and allowlist (REMOTE_ADDR + ipaddress CIDR checks).
+6. Add session expiry/rotation and secure cookie flags.

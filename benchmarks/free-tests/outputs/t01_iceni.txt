@@ -1,0 +1,32 @@
+<review>
+  <issue severity="critical" lines="13-16">
+    Path traversal in load_metric_file. client_id and filename are joined into a path with no sanitization, so a filename like "../../etc/passwd" (or an absolute path, since os.path.join discards earlier components on an absolute arg) escapes DATA_DIR. An attacker controlling these values can read arbitrary files. Validate/normalize the resolved path and assert it stays under DATA_DIR; reject separators and absolute paths.
+  </issue>
+  <issue severity="critical" lines="20-21,9">
+    validate_name is ineffective as a security gate. NAME_PATTERN uses re.match (anchored only at the start, not the end) and the pattern (\w+\.?)+ matches a leading substring, so "evil; rm -rf" or "foo/bar" passes as long as it starts with a word char. The nested quantifier is also catastrophic-backtracking prone (ReDoS) on inputs like "aaaa...!". Use re.fullmatch with a bounded, linear pattern such as r"\w+(\.\w+)*".
+  </issue>
+  <issue severity="high" lines="56">
+    os.chmod(out_path, 0o777) makes the export world-writable (and readable). Metrics output is set to permissions any local user can overwrite/read. Use restrictive perms (e.g. 0o600 or 0o640).
+  </issue>
+  <issue severity="high" lines="59-66">
+    reset() is called "directly with request data" per the comment, so client_id is attacker-controlled. With client_id=None it clears the entire cache (any caller can wipe all clients' data — missing authz / unsafe default). With a value, name.startswith(client_id) deletes by metric-name prefix, not by owning client, so "" deletes everything and a short prefix deletes other clients' metrics. Cache keys should be namespaced per client and deletion scoped to the authenticated client.
+  </issue>
+  <issue severity="high" lines="14-17">
+    load_metric_file ingests arbitrary client-submitted JSON with no size limit and the file handle is never closed (leaks descriptors; on error the file stays open). A huge file can exhaust memory. Use a context manager (with open(...)) and cap the read size.
+  </issue>
+  <issue severity="medium" lines="41-47">
+    summary() crashes if name is unknown: _cache.get(name) returns None, so len(values) raises TypeError. Also if values is an empty list, mean divides by zero and max() raises ValueError. Guard for missing/empty.
+  </issue>
+  <issue severity="medium" lines="34-37">
+    percentile() raises IndexError at the top end: idx = int(len*pct/100) equals len when pct is 100 (and for p95 on small lists rounding can hit len), indexing out of range. Clamp idx to len-1, and handle the empty-list case.
+  </issue>
+  <issue severity="medium" lines="25-31,31">
+    record_metrics assumes well-formed input: data["metrics"], entry["name"], entry["value"] raise KeyError/TypeError on malformed client JSON, and float(entry["value"]) raises ValueError on non-numeric values (e.g. "NaN"/"inf" are silently accepted, polluting stats). Validate structure and value ranges; reject NaN/inf.
+  </issue>
+  <issue severity="low" lines="10,30">
+    _cache is unbounded global state with no per-client isolation or eviction; a client can grow it without limit (memory DoS) and names from different clients collide. Bound size and namespace keys by client_id.
+  </issue>
+  <issue severity="low" lines="54-55">
+    export_all writes the output non-atomically and without ensuring the directory/encoding; a crash mid-write leaves a truncated file. Consider writing to a temp file and renaming.
+  </issue>
+</review>

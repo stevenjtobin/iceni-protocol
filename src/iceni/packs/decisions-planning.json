@@ -1,0 +1,258 @@
+{
+  "name": "decisions-planning",
+  "description": "Decide and plan with structure.",
+  "aliases": [
+    {
+      "petname": "decision-matrix",
+      "intent": {
+        "goal": "Build a weighted decision matrix for these options.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "scored matrix + winner"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "weekly-plan",
+      "intent": {
+        "goal": "Turn these goals into a realistic weekly plan.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "day-by-day plan"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "prioritize",
+      "intent": {
+        "goal": "Prioritize these items (impact vs effort).",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "ranked list with reasoning"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "risk-list",
+      "intent": {
+        "goal": "List the risks here with likelihood and mitigation.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "risk table"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "checklist",
+      "intent": {
+        "goal": "Turn this process into a checklist.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "checklist"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "meeting-agenda",
+      "intent": {
+        "goal": "Draft a tight, timeboxed meeting agenda.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "agenda with times"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "retro",
+      "intent": {
+        "goal": "Run a retro on this: went well / didn't / try next.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "three lists"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "next-actions",
+      "intent": {
+        "goal": "Extract concrete next actions with owners.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "action list"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "mind-map",
+      "intent": {
+        "goal": "Outline a mind map for this topic.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "indented branches"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "goal-breakdown",
+      "intent": {
+        "goal": "Break this goal into milestones and tasks.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "milestone tree"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "timeboxing",
+      "intent": {
+        "goal": "Timebox these tasks into a focused day.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "schedule blocks"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "tradeoff-table",
+      "intent": {
+        "goal": "Lay out the tradeoffs of this decision.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "tradeoff table"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    }
+  ]
+}

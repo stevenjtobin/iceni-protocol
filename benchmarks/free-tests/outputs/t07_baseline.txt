@@ -1,0 +1,72 @@
+# Dependency Security & Maintenance Audit
+
+These requirements were pinned in August 2019 and left frozen for roughly five years. The "do not touch" note is exactly the problem: almost every package is several major or minor versions behind, and a large share of them carry published CVEs — including remote code execution, SQL injection, and authentication bypass. This file should be treated as a standing security liability, not a stable baseline. Below is a triaged breakdown, starting with the items that need attention first.
+
+## Critical — fix immediately
+
+**pyyaml 5.1** — Vulnerable to CVE-2020-1747 and CVE-2020-14343. `yaml.load`/`FullLoader` can be coerced into constructing arbitrary Python objects, which is arbitrary code execution on untrusted input. Upgrade to >= 5.4 (prefer 6.x) and use `yaml.safe_load` everywhere.
+
+**django 2.2.0** — Missing the entire 2.2.x security patch stream: SQL injection (CVE-2020-7471, CVE-2021-35042), potential RCE via crafted queries (CVE-2022-28346/28347), plus numerous XSS and DoS fixes. Worse, the 2.2 LTS line reached end-of-life in April 2022, so it no longer receives any security support. Plan a migration to a supported LTS (4.2+); at an absolute minimum never run below the final 2.2.28.
+
+**cryptography 2.9** — Ships an old, vulnerable OpenSSL and is exposed to CVE-2020-25659 and the chain of OpenSSL CVEs fixed in later wheels (e.g. CVE-2023-0286). Because it backs TLS for requests, urllib3, and paramiko, a weakness here is broadly reachable. Upgrade to a current release (42.x+).
+
+**lxml 4.6.0** — CVE-2021-43818: the HTML cleaner can be bypassed so crafted markup smuggles script through, yielding XSS. Upgrade to >= 4.6.5 (prefer 5.x). If you rely on `lxml.html.clean`, note it has since moved to the separate `lxml_html_clean` package.
+
+**paramiko 2.4.1** — CVE-2018-7750: the SSH server side processes authentication before the handshake completes, an authentication bypass. Also CVE-2022-24302 (private-key file race). Upgrade to >= 2.10.1 (prefer 3.x).
+
+**sqlalchemy 1.2.0** — CVE-2019-7164 / CVE-2019-7548: SQL injection through the `order_by` and limit/offset relationship paths in the 1.2 line. Move to a patched 1.3/1.4 at minimum and plan for 2.x.
+
+## High — schedule promptly
+
+**werkzeug 0.14.1** — Weak/bypassable debugger PIN and a multipart-parsing DoS (CVE-2023-25577). If the debugger is ever exposed in production this is an RCE path. Make sure debug mode is hard-disabled, and upgrade to 3.x alongside Flask.
+
+**flask 0.12.2** — Predates session/cookie fixes and is locked to the vulnerable Werkzeug/Jinja2 pins above. Upgrade to >= 2.3 together with werkzeug and jinja2 as a unit.
+
+**jinja2 2.10** — CVE-2019-10906 (sandbox escape via `str.format`) and CVE-2020-28493 (ReDoS in `urlize`). Upgrade to >= 2.11.3, ideally 3.x.
+
+**requests 2.19.1** — CVE-2018-18074 (credentials leaked to the host on redirect) and the later CVE-2023-32681 (Proxy-Authorization header leaked across redirects). Upgrade to >= 2.31.0.
+
+**urllib3 1.24.1** — CVE-2019-11236 (CRLF injection in the request path), CVE-2019-11324 (weakened cert verification when merging pool settings), and CVE-2021-33503 (ReDoS). Upgrade to >= 1.26.18, or 2.x after checking requests compatibility.
+
+**pillow 8.0.0** — A cluster of image-decoding CVEs were fixed after this version, including CVE-2021-34552 (buffer overflow on a crafted image) and CVE-2022-22817 (eval-based RCE in ImageMath). Anything that decodes user-supplied images is exposed. Upgrade to the latest 10.x.
+
+**pyjwt 1.6.4** — CVE-2022-29217: algorithm-confusion allowing signature bypass when key types are mixed. Upgrade to >= 2.4.0 and always pass an explicit `algorithms=[...]` allowlist when decoding.
+
+**oauthlib 2.1.0** — CVE-2022-36087: ReDoS via a crafted IPv6 URI in the OAuth flow (DoS on the auth path). Upgrade to >= 3.2.1.
+
+## Medium — plan into the upgrade cycle
+
+**tornado 5.1** — Open redirect (CVE-2023-28370) and older request-handling issues; upgrade to >= 6.3.3.
+
+**celery 4.2.0 / kombu 4.2.1 / billiard 3.5.0** — Treat as one unit. Celery 4.2 is affected by CVE-2021-23727 (stored command injection via crafted task metadata) and the 4.x line is no longer maintained. Upgrade together to Celery 5.2.2+, kombu 5.2+, billiard 3.6.4+/4.x.
+
+**pymongo 3.7.0** — CVE-2019-2391 (BSON out-of-bounds read → DoS). Upgrade to >= 3.12, or 4.x after a server-compatibility check.
+
+**websocket-client 0.54.0** — Lacks later TLS/host-verification and redirect hardening. Upgrade to >= 1.2.0 and confirm certificate verification is on.
+
+**numpy 1.16.0** — CVE-2019-6446 (`numpy.load` defaulting to `allow_pickle=True`, insecure on untrusted `.npy` files) plus later buffer-overflow fixes. Upgrade to a maintained 1.2x line and never load untrusted arrays with pickle enabled.
+
+**httplib2 0.12.0** — CVE-2021-21240 (ReDoS via crafted header). The library is also in low-maintenance mode; upgrade to >= 0.19.0 and consider migrating to requests/httpx.
+
+**elasticsearch 6.3.1** — No client CVE, but it locks you to an end-of-life Elasticsearch 6 server line and old TLS defaults. Upgrade the client in step with a supported cluster (7.17+/8.x).
+
+## Low — maintenance / staleness, no headline CVE
+
+- **gunicorn 19.9.0** — Predates request-smuggling handling fixes; upgrade to >= 22.0.0. Lower exposure behind a correctly configured reverse proxy.
+- **psycopg2 2.7.5** — No standing CVE; upgrade to >= 2.9.5 for newer libpq/build fixes.
+- **redis 3.2.0** (redis-py) — No notable CVE but several majors behind; upgrade to >= 4.5 (watch SSL/`from_url` API changes).
+- **scipy 1.1.0** — Staleness and incompatibility with modern numpy; upgrade in tandem with numpy.
+- **markdown 2.6.11** — No headline CVE, but if you render untrusted markdown to HTML, sanitize the output (bleach/nh3) regardless; upgrade to >= 3.4.
+- **boto3 1.9.0 / botocore 1.12.0** — Very old AWS SDK; no client CVE but missing endpoints and TLS/signature improvements. Upgrade the pair together.
+- **simplejson 3.16.0** — Largely redundant with the stdlib `json`; upgrade or drop where possible.
+- **click 6.7** — No CVE, but 6.x is old (current 8.x) and can block upgrades of tools needing click 8. Upgrade to >= 8.1.
+- **python-dateutil 2.7.3** — No notable CVE; upgrade to >= 2.8.2 for parser fixes.
+- **pytz 2018.5** — The bundled timezone database is ~6 years stale, so DST/offset rules are wrong — a correctness bug, not a security one. Upgrade, or migrate to the stdlib `zoneinfo` (Python 3.9+).
+- **six 1.11.0** — A Python 2/3 shim with no CVE; only meaningful if the code still targets Python 2 (itself the real risk). Upgrade to 1.16.0 and aim to remove it.
+
+## Cross-cutting observations
+
+- **End-of-life, not just outdated:** Django 2.2, Celery 4.x, the Elasticsearch 6 client, and the `six` shim all point to platforms/runtimes that are themselves EOL. The `six` and `pytz`/`python-dateutil` trio strongly suggests this codebase may still assume Python 2 or a very old Python 3 — worth confirming, because the interpreter version may be the largest unlisted risk.
+- **Upgrade in coupled groups, not one-by-one:** the WSGI stack (flask/werkzeug/jinja2), the task-queue stack (celery/kombu/billiard), the AWS SDK (boto3/botocore), and the scientific pair (numpy/scipy) each need to move together to avoid breaking version constraints.
+- **Defense-in-depth regardless of versions:** disable Flask/Werkzeug debug mode in production, pin explicit JWT algorithms, use `yaml.safe_load`, never `pickle`-load untrusted numpy data, and sanitize any user-supplied markdown/HTML — these hold even after upgrading.
+- **Process fix:** adopt automated dependency/CVE scanning (pip-audit, Dependabot, or Safety) so the next five years don't silently accumulate the same debt.

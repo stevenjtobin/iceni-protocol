@@ -1,0 +1,174 @@
+{
+  "name": "lang-tools",
+  "description": "Targeted language and tooling helpers.",
+  "aliases": [
+    {
+      "petname": "regex-explain",
+      "intent": {
+        "goal": "Explain this regex and flag any bugs.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "explanation + issues"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "sql-review",
+      "intent": {
+        "goal": "Review this SQL for correctness, performance, and injection.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issues + optimized query"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "async-review",
+      "intent": {
+        "goal": "Review this async code for await/concurrency bugs.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issues + fixes"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "null-safety",
+      "intent": {
+        "goal": "Find null/None-safety gaps in this code.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "gap list + fixes"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "lint-explain",
+      "intent": {
+        "goal": "Explain these linter errors and how to fix them.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "error: fix list"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "import-cleanup",
+      "intent": {
+        "goal": "Suggest cleanups for these imports.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "cleaned imports"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "config-review",
+      "intent": {
+        "goal": "Review this config file for mistakes.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issue list"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "migration-plan",
+      "intent": {
+        "goal": "Plan a safe migration for this change.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "migration steps"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    }
+  ]
+}

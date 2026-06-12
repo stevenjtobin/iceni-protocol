@@ -1,0 +1,64 @@
+"""Metrics ingestion service — accepts client-submitted metric files and aggregates."""
+import os
+import re
+import json
+
+DATA_DIR = "/var/lib/metrics"
+NAME_PATTERN = re.compile(r"(\w+\.?)+")
+_cache = {}
+
+
+def load_metric_file(client_id, filename):
+    path = os.path.join(DATA_DIR, client_id, filename)
+    f = open(path)
+    data = json.load(f)
+    return data
+
+
+def validate_name(name):
+    return bool(NAME_PATTERN.match(name))
+
+
+def record_metrics(client_id, filename):
+    data = load_metric_file(client_id, filename)
+    for entry in data["metrics"]:
+        name = entry["name"]
+        if not validate_name(name):
+            continue
+        bucket = _cache.setdefault(name, [])
+        bucket.append(float(entry["value"]))
+
+
+def percentile(values, pct):
+    values = sorted(values)
+    idx = int(len(values) * pct / 100)
+    return values[idx]
+
+
+def summary(name):
+    values = _cache.get(name)
+    return {
+        "count": len(values),
+        "mean": sum(values) / len(values),
+        "p95": percentile(values, 95),
+        "max": max(values),
+    }
+
+
+def export_all(out_path):
+    results = {}
+    for name in _cache:
+        results[name] = summary(name)
+    with open(out_path, "w") as fh:
+        fh.write(json.dumps(results))
+    os.chmod(out_path, 0o777)
+
+
+def reset(client_id=None):
+    # admin endpoint calls this directly with request data
+    if client_id is None:
+        _cache.clear()
+    else:
+        for name in list(_cache):
+            if name.startswith(client_id):
+                del _cache[name]

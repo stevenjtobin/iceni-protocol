@@ -1,0 +1,66 @@
+<task>Check this code for production readiness before deployment.</task>
+<inputs>
+  <input>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-api
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-api
+  template:
+    metadata:
+      labels:
+        app: payments-api
+    spec:
+      containers:
+        - name: payments-api
+          image: registry.internal/payments-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              value: "postgres://payments:S3cretPass!@db.internal:5432/payments"
+            - name: STRIPE_SECRET_KEY
+              value: "sk_live_51HxT2example"
+            - name: LOG_LEVEL
+              value: "DEBUG"
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+            - name: app-logs
+              mountPath: /var/log/app
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+        - name: app-logs
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-api
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: payments-api
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+</input>
+</inputs>
+<constraints>
+  <constraint>check error handling, secrets, logging, input validation</constraint>
+  <constraint>PASS/FAIL/WARN each category</constraint>
+</constraints>
+<output_format>checklist with status and one-line finding per item</output_format>
+<note>XML checklist with structured finding elements</note>

@@ -1,0 +1,46 @@
+{
+  "_comment": "Sample value-case benchmark. Run: iceni benchmark benchmarks/tasks.sample.json [--execute --judge claude]. Edit pricing to your real $/Mtok.",
+  "pricing": {
+    "claude": { "in": 3.0, "out": 15.0 },
+    "gpt":    { "in": 2.5, "out": 10.0 },
+    "kimi":   { "in": 0.6, "out": 2.5 }
+  },
+  "tasks": [
+    {
+      "name": "review",
+      "intent": {
+        "goal": "Review this code for bugs, edge cases, and security issues.",
+        "inputs": ["{{code}}"],
+        "constraints": ["be concise", "cite line numbers"],
+        "outputs": { "format": "issues, severity" },
+        "style_hints": { "claude": "use XML tags", "gpt": "prioritized markdown list", "kimi": "terse bullets" }
+      },
+      "baseline": "Please review the following code very carefully for any and all bugs, edge cases, security vulnerabilities, and potential improvements. For each issue you find, provide a thorough explanation, the severity level, and a concrete suggested fix. Be comprehensive. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    },
+    {
+      "name": "testgen",
+      "intent": {
+        "goal": "Write unit tests for this function.",
+        "inputs": ["{{code}}"],
+        "constraints": ["cover edge cases", "use the standard test framework"],
+        "outputs": { "format": "test code" },
+        "style_hints": { "claude": "use XML tags", "gpt": "markdown code block", "kimi": "just the code" }
+      },
+      "baseline": "Write a comprehensive and thorough set of unit tests for the following function. Make sure to cover all of the important edge cases, error conditions, and boundary values, and use the standard, idiomatic testing framework for the language. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    },
+    {
+      "name": "security-audit",
+      "intent": {
+        "goal": "Perform a security audit of this code.",
+        "inputs": ["{{code}}"],
+        "constraints": ["focus on exploitable issues", "rank by severity"],
+        "outputs": { "format": "findings with CWE and severity" },
+        "style_hints": { "claude": "use XML tags", "gpt": "markdown table", "kimi": "concise findings" }
+      },
+      "baseline": "Conduct a thorough and detailed security audit of the following code. Identify every exploitable vulnerability you can find, map each one to its corresponding CWE identifier, rank them all by severity from critical to low, and provide a remediation recommendation for each. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    }
+  ]
+}

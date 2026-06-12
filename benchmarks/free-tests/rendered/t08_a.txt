@@ -1,0 +1,71 @@
+<task>Review this API endpoint design for REST conventions and security gaps.</task>
+<inputs>
+  <input>"""User management router for the admin dashboard (FastAPI)."""
+import base64
+import jwt
+from fastapi import APIRouter, Request, Query
+
+router = APIRouter()
+SECRET = "app-secret"
+users_db = {}  # user_id -> {"username", "password", "email", "is_admin"}
+
+
+@router.post("/login")
+def login(username: str = Query(...), password: str = Query(...)):
+    for uid, u in users_db.items():
+        if u["username"] == username and u["password"] == password:
+            token = base64.b64encode(f"{uid}:{username}".encode()).decode()
+            return {"status": "ok", "token": token}
+    return {"status": "error", "message": "bad credentials"}
+
+
+def current_user(request: Request):
+    auth = request.headers.get("Authorization", "")
+    token = auth.replace("Bearer ", "")
+    payload = jwt.decode(token, options={"verify_signature": False})
+    return payload
+
+
+@router.get("/users")
+def list_users():
+    return {"users": [
+        {"id": uid, "email": u["email"], "password": u["password"]}
+        for uid, u in users_db.items()
+    ]}
+
+
+@router.get("/users/{user_id}")
+def get_user(user_id: int, request: Request):
+    user = users_db.get(user_id)
+    if not user:
+        return {"status": "error", "message": "not found"}
+    return user
+
+
+@router.get("/users/{user_id}/delete")
+def delete_user(user_id: int, request: Request):
+    if request.headers.get("X-Admin") == "true":
+        users_db.pop(user_id, None)
+        return {"status": "ok", "deleted": user_id}
+    return {"status": "error", "message": "admin only"}
+
+
+@router.post("/users/{user_id}/reset-password")
+def reset_password(user_id: int, new_password: str = Query(...)):
+    users_db[user_id]["password"] = new_password
+    return {"status": "ok"}
+
+
+@router.put("/users/{user_id}/email")
+def update_email(user_id: int, email: str, request: Request):
+    me = current_user(request)
+    users_db[user_id]["email"] = email
+    return {"status": "ok", "updated_by": me.get("sub")}
+</input>
+</inputs>
+<constraints>
+  <constraint>check HTTP method, status codes, auth, error responses</constraint>
+  <constraint>rank issues by severity</constraint>
+</constraints>
+<output_format>issue list with severity, description, and fix</output_format>
+<note>XML structured issues with severity attributes</note>

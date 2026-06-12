@@ -1,0 +1,171 @@
+{
+  "_comment": "10-task V1 benchmark (Kimi's rubric). iceni benchmark benchmarks/tasks.10-task.json [--execute --judge claude --report report-v1.md]",
+  "_rubric": "Kimi V1: functional 40% / token 30% / format 15% / semantic 15%. Pass = avg V1 > 70/100.",
+  "pricing": {
+    "claude": {"in": 3.0,  "out": 15.0},
+    "gpt":    {"in": 2.5,  "out": 10.0},
+    "kimi":   {"in": 1.5,  "out": 7.5}
+  },
+  "tasks": [
+    {
+      "name": "code-review",
+      "intent": {
+        "goal": "Review this code for bugs, edge cases, and security issues.",
+        "inputs": ["{{code}}"],
+        "constraints": ["be concise", "cite line numbers", "flag security issues first"],
+        "outputs": {"format": "issues grouped by severity (critical/high/medium/low)"},
+        "style_hints": {
+          "claude": "use XML tags with severity attributes",
+          "gpt": "prioritized markdown table with CWE where applicable",
+          "kimi": "terse bullet points grouped by severity"
+        }
+      },
+      "baseline": "Please review the following code very carefully for any and all bugs, edge cases, security vulnerabilities, and potential improvements. For each issue you find, provide a thorough explanation, the severity level, and a concrete suggested fix. Be comprehensive. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    },
+    {
+      "name": "test-gen",
+      "intent": {
+        "goal": "Write unit tests for this function.",
+        "inputs": ["{{code}}"],
+        "constraints": ["cover edge cases and negative cases", "use pytest", "include a fixture if state needed"],
+        "outputs": {"format": "runnable pytest code"},
+        "style_hints": {
+          "claude": "XML-wrapped code block with a brief test strategy note",
+          "gpt": "markdown code block with test case comments",
+          "kimi": "just the code, no extra prose"
+        }
+      },
+      "baseline": "Write a comprehensive and thorough set of unit tests for the following function using pytest. Make sure to cover all the important edge cases, error conditions, and boundary values, and include at least one negative test (expected failure). {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    },
+    {
+      "name": "refactor",
+      "intent": {
+        "goal": "Refactor this code for clarity, safety, and maintainability.",
+        "inputs": ["{{code}}"],
+        "constraints": ["preserve exact behavior", "add type hints", "eliminate the obvious bug"],
+        "outputs": {"format": "refactored code then a brief change summary"},
+        "style_hints": {
+          "claude": "before/after in XML blocks with change rationale",
+          "gpt": "diff-style markdown then change list",
+          "kimi": "code first, then one-line per change"
+        }
+      },
+      "baseline": "Refactor the following code to improve its clarity, safety, and maintainability. Preserve all existing behavior but add appropriate type hints, fix any obvious bugs, and briefly explain the key changes you made. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    },
+    {
+      "name": "docstring",
+      "intent": {
+        "goal": "Write a Google-style docstring for this function.",
+        "inputs": ["{{code}}"],
+        "constraints": ["one-line summary first", "include Args, Returns, Raises", "note the known bug"],
+        "outputs": {"format": "docstring only, no surrounding code"},
+        "style_hints": {
+          "claude": "Google-style in an XML code block",
+          "gpt": "Google-style in a markdown code block",
+          "kimi": "compact Google docstring, no extra prose"
+        }
+      },
+      "baseline": "Write a comprehensive docstring for the following function in Google style. Include: a one-line summary, an Args section with types and descriptions, a Returns section, and a Raises section if applicable. Note any known issues or bugs. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    },
+    {
+      "name": "error-explain",
+      "intent": {
+        "goal": "Explain this Python error and give the exact fix.",
+        "inputs": ["{{input}}"],
+        "constraints": ["name the root cause in one sentence", "show the corrected line(s)", "be concise"],
+        "outputs": {"format": "root cause + corrected code"},
+        "style_hints": {
+          "claude": "structured XML: cause, fix, corrected snippet",
+          "gpt": "numbered steps: 1. cause 2. fix 3. corrected code",
+          "kimi": "fix first, cause second — no preamble"
+        }
+      },
+      "baseline": "Explain in detail why the following Python error occurred, what the root cause is, and provide a concrete fix with the corrected code. Include the full corrected snippet. {{input}}",
+      "input": "TypeError: unsupported operand type(s) for -=: 'str' and 'int'\nTraceback (most recent call last):\n  File 'app.py', line 12, in transfer\n    accounts[src] -= amount\naccounts = {'alice': '100', 'bob': 50}\namount = 25"
+    },
+    {
+      "name": "deploy-check",
+      "intent": {
+        "goal": "Check this code for production readiness before deployment.",
+        "inputs": ["{{code}}"],
+        "constraints": ["check error handling, secrets, logging, input validation", "PASS/FAIL/WARN each category"],
+        "outputs": {"format": "checklist with status and one-line finding per item"},
+        "style_hints": {
+          "claude": "XML checklist with structured finding elements",
+          "gpt": "markdown checklist table: category | status | finding",
+          "kimi": "PASS/FAIL/WARN bullet list, no headers"
+        }
+      },
+      "baseline": "Perform a pre-deployment review of the following code. Check for: missing error handling, hardcoded secrets or credentials, logging gaps, performance issues, and missing input validation. Provide a checklist with PASS/FAIL/WARN for each category and a brief explanation. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    },
+    {
+      "name": "dependency-audit",
+      "intent": {
+        "goal": "Audit these Python dependencies for security and maintenance risks.",
+        "inputs": ["{{input}}"],
+        "constraints": ["flag known CVEs or pinned-low versions", "flag unmaintained packages", "rank by risk"],
+        "outputs": {"format": "risk table: package | version | risk | recommended action"},
+        "style_hints": {
+          "claude": "XML risk assessment with structured package elements",
+          "gpt": "markdown risk table with upgrade recommendations",
+          "kimi": "concise risk list, highest risk first"
+        }
+      },
+      "baseline": "Audit the following Python requirements for security vulnerabilities, outdated packages, and maintenance risks. For each package, check for known CVEs, note if the package appears unmaintained or deprecated, and provide a recommended action (upgrade/replace/ok). Rank by risk level. {{input}}",
+      "input": "click==8.1.7\ncryptography==42.0.5\nsentence-transformers==3.0.0\nhdbscan==0.8.33\nscikit-learn==1.4.0\nopenai==1.50.0\nanthropic==0.40.0\nnumpy==1.24.0\npillow==9.5.0\nrequests==2.28.0"
+    },
+    {
+      "name": "api-review",
+      "intent": {
+        "goal": "Review this API endpoint design for REST conventions and security gaps.",
+        "inputs": ["{{input}}"],
+        "constraints": ["check HTTP method, status codes, auth, error responses", "rank issues by severity"],
+        "outputs": {"format": "issue list with severity, description, and fix"},
+        "style_hints": {
+          "claude": "XML structured issues with severity attributes",
+          "gpt": "markdown issue table: issue | severity | fix",
+          "kimi": "direct numbered issue list"
+        }
+      },
+      "baseline": "Review the following API endpoint design for REST conventions, proper HTTP methods, appropriate status codes, authentication and authorization gaps, and error handling. List all issues found with severity and a concrete suggestion for improvement. {{input}}",
+      "input": "POST /api/users/delete\nAuthorization: none required\nBody: {\"user_id\": 123}\nResponse 200: {\"deleted\": true}\nResponse 500: {\"error\": \"something went wrong\"}\nNo rate limiting. No input validation on user_id. Admin-only action."
+    },
+    {
+      "name": "commit-message",
+      "intent": {
+        "goal": "Write a conventional commit message for this git diff.",
+        "inputs": ["{{input}}"],
+        "constraints": ["conventional commits format", "subject under 72 chars", "imperative mood"],
+        "outputs": {"format": "subject line + optional body"},
+        "style_hints": {
+          "claude": "structured with subject, body, and breaking-change note if applicable",
+          "gpt": "conventional format with a one-paragraph body explaining the why",
+          "kimi": "subject only if simple; add body only if change is complex"
+        }
+      },
+      "baseline": "Write a git commit message in Conventional Commits format for the following diff. The subject line should be under 72 characters, use the correct type prefix (feat/fix/refactor/docs/test/chore), and be in the imperative mood. Include a body paragraph if the change is complex or needs context. {{input}}",
+      "input": "diff --git a/src/iceni/store/aliases.py b/src/iceni/store/aliases.py\nindex abc1234..def5678 100644\n--- a/src/iceni/store/aliases.py\n+++ b/src/iceni/store/aliases.py\n@@ -14,6 +14,9 @@ def create_alias(conn, petname, intent, scope='user'):\n     \"\"\"Mint identity, sign intent, bind petname in one transaction.\"\"\"\n+    existing = resolve(conn, petname, scope)\n+    if existing:\n+        raise PetnameExists(f\"petname '{petname}' already exists in scope '{scope}'\")\n+\n     cid, priv, pub = mint_key_identity()\n     save_key(cid, priv)"
+    },
+    {
+      "name": "security-audit",
+      "intent": {
+        "goal": "Perform a security audit of this code.",
+        "inputs": ["{{code}}"],
+        "constraints": ["focus on exploitable issues", "rank by severity", "map to CWE"],
+        "outputs": {"format": "findings with CWE, severity (CVSS-level), and remediation"},
+        "style_hints": {
+          "claude": "XML findings with CWE and CVSS score attributes",
+          "gpt": "markdown table: CWE | severity | description | remediation",
+          "kimi": "numbered findings, highest severity first"
+        }
+      },
+      "baseline": "Conduct a thorough and detailed security audit of the following code. Identify every exploitable vulnerability you can find, map each one to its corresponding CWE identifier, rank them all by severity from critical to low, and provide a remediation recommendation for each. {{code}}",
+      "input_file": "../examples/buggy_example.py"
+    }
+  ]
+}

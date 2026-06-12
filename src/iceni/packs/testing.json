@@ -1,0 +1,279 @@
+{
+  "name": "testing",
+  "description": "Generate and review tests.",
+  "aliases": [
+    {
+      "petname": "test-gen",
+      "intent": {
+        "goal": "Write unit tests for this function.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "runnable pytest code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "edge-cases",
+      "intent": {
+        "goal": "List the edge cases this code must handle.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "edge-case list"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "test-plan",
+      "intent": {
+        "goal": "Write a test plan for this module.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "test plan"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "mock-gen",
+      "intent": {
+        "goal": "Write the mocks/fixtures needed to test this.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "mock code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "coverage-gaps",
+      "intent": {
+        "goal": "Identify what this test suite fails to cover.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "uncovered-behavior list"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "property-tests",
+      "intent": {
+        "goal": "Suggest property-based tests for this.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "property list + hypothesis code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "fixture-gen",
+      "intent": {
+        "goal": "Write pytest fixtures for this code's dependencies.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "fixture code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "assertion-review",
+      "intent": {
+        "goal": "Review these assertions for weak or missing checks.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "assertion critique"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "flaky-fix",
+      "intent": {
+        "goal": "Diagnose why this test is flaky and propose a fix.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "cause + fix"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "integration-test",
+      "intent": {
+        "goal": "Write an integration test for this flow.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "integration test code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "regression-guard",
+      "intent": {
+        "goal": "Write a regression test that pins this bug fixed.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "regression test"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "test-naming",
+      "intent": {
+        "goal": "Suggest clearer names for these tests.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "old -> new names"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "snapshot-review",
+      "intent": {
+        "goal": "Review whether snapshot testing is appropriate here.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "recommendation"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    }
+  ]
+}

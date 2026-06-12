@@ -1,0 +1,279 @@
+{
+  "name": "refactoring",
+  "description": "Restructure code safely.",
+  "aliases": [
+    {
+      "petname": "refactor",
+      "intent": {
+        "goal": "Refactor this code for clarity, safety, and maintainability.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "refactored code + change summary"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "extract-function",
+      "intent": {
+        "goal": "Extract well-named functions from this long block.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "refactored code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "rename-suggest",
+      "intent": {
+        "goal": "Suggest clearer identifiers throughout.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "rename table"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "dedupe",
+      "intent": {
+        "goal": "Find and collapse duplicated logic.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "dedupe plan + code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "simplify-logic",
+      "intent": {
+        "goal": "Simplify this tangled conditional logic.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "simplified code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "guard-clauses",
+      "intent": {
+        "goal": "Rewrite nested ifs as early-return guard clauses.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "refactored code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "split-module",
+      "intent": {
+        "goal": "Propose how to split this oversized module.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "split plan"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "pure-function",
+      "intent": {
+        "goal": "Refactor this to separate pure logic from side effects.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "refactored code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "remove-globals",
+      "intent": {
+        "goal": "Eliminate global state here.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "refactored code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "add-types",
+      "intent": {
+        "goal": "Add complete, accurate type hints.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "typed code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "early-return",
+      "intent": {
+        "goal": "Flatten this with early returns.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "refactored code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "comprehension",
+      "intent": {
+        "goal": "Replace these loops with comprehensions where it reads better.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "refactored code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "decompose",
+      "intent": {
+        "goal": "Break this god-function into smaller pieces.",
+        "inputs": [
+          "{{code}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "decomposed code"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    }
+  ]
+}

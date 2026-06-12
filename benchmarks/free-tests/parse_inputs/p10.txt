@@ -1,0 +1,51 @@
+# API Review: User Management Router
+
+This router has several serious security problems and a number of REST convention issues. The headline concern is that there is no real authentication, passwords are handled in plaintext, and privileged actions can be triggered by anyone. Details below, grouped by severity.
+
+## Critical
+
+**1. Tokens are not actually secured.**
+`login()` creates the "token" with `base64.b64encode(f"{uid}:{username}")`. Base64 is just encoding, not signing, so anyone can craft a token for any user. Worse, `current_user()` calls `jwt.decode(token, options={"verify_signature": False})`, which accepts any JWT without checking the signature. The `SECRET` constant is never used anywhere. Net effect: there is no authentication.
+*Fix:* Issue signed JWTs (`jwt.encode({"sub": uid, "exp": ...}, SECRET, algorithm="HS256")`) and always verify them (`jwt.decode(token, SECRET, algorithms=["HS256"])`), handling invalid/expired tokens with a 401. Load `SECRET` from environment config, never hardcode it.
+
+**2. Passwords are stored and exposed in plaintext.**
+Passwords are kept as raw strings, compared directly in `login()`, and — most dangerously — `GET /users` returns every user's password in the response. `GET /users/{user_id}` also returns the full record including the password.
+*Fix:* Hash passwords with bcrypt or argon2 (e.g. via `passlib`) and verify against the hash. Never serialize the password field; use a response model that only exposes safe fields (id, username, email, is_admin).
+
+**3. No authorization on sensitive endpoints.**
+`list_users`, `get_user`, and `reset_password` require no credentials at all. `reset_password` in particular lets anyone overwrite any user's password through a query parameter — a one-request account takeover. `update_email` reads the caller but then ignores it and writes to whatever `user_id` is in the path, so any user can change anyone else's email (an IDOR / privilege-escalation bug).
+*Fix:* Protect every non-public route with an auth dependency (`Depends(current_user)`), and enforce that callers can only modify their own record unless they hold an admin claim. Return 403 when the check fails.
+
+## High
+
+**4. The admin check trusts a client header.**
+`delete_user` authorizes deletion based solely on `X-Admin: true`. Any client can send that header, so it offers no protection.
+*Fix:* Determine admin status from the verified token's `is_admin` claim, not from a request header, and return 403 for non-admins.
+
+**5. Deletion happens over GET.**
+`GET /users/{user_id}/delete` performs a destructive action. GET is supposed to be safe; routing deletion through it means it can be triggered by link prefetching, crawlers, caching, or CSRF.
+*Fix:* Use `DELETE /users/{user_id}` and drop the `/delete` action verb from the path.
+
+## Medium
+
+**6. Credentials travel in the URL.**
+`login` and `reset_password` take `username`, `password`, and `new_password` as query parameters. Query strings get logged by servers and proxies, saved in browser history, and leaked via the `Referer` header.
+*Fix:* Move these into the request body using a Pydantic model so they aren't exposed in the URL.
+
+**7. Errors return 200 OK.**
+Failed logins, "not found", and "admin only" all respond with HTTP 200 and a `{"status": "error"}` body. Clients and infrastructure can't tell success from failure by status code.
+*Fix:* Raise `HTTPException` with the right code — 401 for auth failures, 403 for permission failures, 404 for missing resources, 400/422 for bad input.
+
+**8. Missing users cause 500s on writes.**
+`reset_password` and `update_email` index `users_db[user_id]` directly, so a non-existent id raises `KeyError` and surfaces as an unhandled 500. `get_user` guards this case, but the write paths don't.
+*Fix:* Look up the user first and raise a 404 if it doesn't exist before mutating, consistently across all routes that take a `user_id`.
+
+## Low
+
+**9. Verb-based resource paths and ad-hoc success envelopes.**
+Paths like `/users/{id}/delete` and `/users/{id}/reset-password` put actions in the URL rather than relying on HTTP methods, and successful responses return a hand-rolled `{"status": "ok"}` instead of the affected resource or an appropriate empty body.
+*Fix:* Prefer noun-based resources with methods conveying intent (`DELETE /users/{id}`, `PUT /users/{id}/password`). Set explicit status codes on the routes (e.g. 204 for a successful delete) and return the resource representation instead of a status string.
+
+## Quick summary
+
+The most urgent fixes are real signed-token verification, hashing passwords and never returning them, and adding genuine authentication/authorization (including ownership and admin checks driven by verified claims rather than spoofable headers). After that, correct the HTTP methods and status codes and stop passing secrets in the URL.

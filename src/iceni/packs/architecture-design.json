@@ -1,0 +1,237 @@
+{
+  "name": "architecture-design",
+  "description": "Review and shape designs.",
+  "aliases": [
+    {
+      "petname": "design-review",
+      "intent": {
+        "goal": "Review this design for soundness and risks.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issues + recommendations"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "api-design",
+      "intent": {
+        "goal": "Review this API design for consistency and ergonomics.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issue list + fixes"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "schema-review",
+      "intent": {
+        "goal": "Review this database schema.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issues ranked by severity"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "tradeoffs",
+      "intent": {
+        "goal": "Lay out the tradeoffs of this technical choice.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "tradeoff table"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "data-model",
+      "intent": {
+        "goal": "Critique this data model and suggest improvements.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "critique + revised model"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "interface-design",
+      "intent": {
+        "goal": "Review this interface/contract for clarity.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issues + suggestions"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "pattern-suggest",
+      "intent": {
+        "goal": "Suggest design patterns that fit this problem.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "pattern + why"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "scalability-review",
+      "intent": {
+        "goal": "Identify scalability bottlenecks in this design.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "bottleneck list"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "boundary-check",
+      "intent": {
+        "goal": "Review the module boundaries and coupling here.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "coupling issues"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "dependency-review",
+      "intent": {
+        "goal": "Review this dependency graph for problems.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "issues + fixes"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    },
+    {
+      "petname": "coupling-check",
+      "intent": {
+        "goal": "Flag tight coupling and suggest decoupling.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be concise",
+          "cite line numbers where relevant"
+        ],
+        "outputs": {
+          "format": "coupling list + fixes"
+        },
+        "style_hints": {
+          "claude": "XML-tagged sections around fenced code blocks",
+          "gpt": "markdown with fenced code blocks",
+          "kimi": "code first, minimal prose"
+        }
+      }
+    }
+  ]
+}

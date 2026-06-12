@@ -1,0 +1,50 @@
+This manifest is not production-ready. There are several critical issues that should block deployment, plus a number of reliability and operational gaps. Details below, roughly in priority order.
+
+CRITICAL — must fix before any deployment
+
+1. Live secrets hardcoded in plaintext
+   - DATABASE_URL contains the database password inline ("S3cretPass!").
+   - STRIPE_SECRET_KEY is a live key (sk_live_...) committed directly in the env block.
+   These are visible to anyone with read access to the manifest, the cluster API (kubectl get deploy -o yaml), version control, and audit logs. Treat both credentials as already compromised: rotate them now, then move them into a Kubernetes Secret (or an external secrets manager / CSI Secrets Store) and inject with valueFrom.secretKeyRef.
+
+2. Privileged container running as root
+   - securityContext.privileged: true plus runAsUser: 0 gives the container near-host-level access. A compromise of the payments app becomes a compromise of the node.
+   Remove privileged, set runAsNonRoot: true with a non-zero UID, drop all Linux capabilities (adding back only what is genuinely needed), and consider a read-only root filesystem.
+
+3. Host Docker socket mounted into the pod
+   - Mounting /var/run/docker.sock via hostPath is equivalent to giving the pod root on the host — it can start/stop any container on the node. A payments API has no legitimate need for this.
+   Remove the docker-sock volume and its mount entirely.
+
+4. Service exposed via NodePort
+   - type: NodePort with nodePort 30080 publishes the payments API on every node's IP, bypassing ingress and any centralized access control.
+   Use ClusterIP behind an ingress/load balancer terminating TLS, and restrict traffic with NetworkPolicies.
+
+HIGH — reliability and correctness
+
+5. Mutable image tag (:latest)
+   - registry.internal/payments-api:latest is non-deterministic: you can't reproduce, audit, or reliably roll back a release. Pin to an immutable tag or, better, a digest (payments-api@sha256:...).
+
+6. No health probes
+   - No readinessProbe or livenessProbe means Kubernetes will route traffic to pods that aren't ready and won't restart hung processes. Add readiness and liveness probes (and a startupProbe if boot is slow) against a health endpoint.
+
+7. Single replica
+   - replicas: 1 means any pod failure, node drain, or rollout causes a full payments outage. Run at least 2–3 replicas, add a PodDisruptionBudget, and define a RollingUpdate strategy.
+
+8. No resource requests/limits
+   - Without CPU/memory requests and limits the pod can be OOM-killed unpredictably or starve neighbors, and the scheduler can't place it well. Set requests and limits based on observed usage.
+
+MEDIUM — operability
+
+9. DEBUG logging in production
+   - LOG_LEVEL: DEBUG is too verbose and risks logging sensitive request and payment data. Use INFO (or WARN) in production and make sure PII / card data is never logged.
+
+10. Logs only in an emptyDir
+    - app-logs uses emptyDir, so logs are lost on restart or reschedule and aren't aggregated. Prefer logging to stdout/stderr and collecting via a cluster log pipeline.
+
+Other things to verify (not visible in this manifest)
+
+- Input validation, authentication/authorization, and rate limiting on the payment API surface — confirm these exist in the application code and/or at the ingress/gateway.
+- Database connection error handling, retries, and timeouts.
+- Namespace: running a payments service in "default" is a smell; give it a dedicated namespace with scoped RBAC and NetworkPolicies.
+
+Bottom line: do not deploy as-is. Items 1–4 are hard blockers (exposed live credentials and a host-takeover security posture); 5–8 are required for a service that handles payments to be reliable.

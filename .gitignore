@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# ICENI local state / demo homes
+.iceni/
+.iceni-demo*/
+*.db
+*.db-wal
+*.db-shm
+
+# Stray exported alias files + caches + editor dirs
+/*.iceni
+.mypy_cache/
+.idea/
+.vscode/

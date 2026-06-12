@@ -1,0 +1,58 @@
+<task>Explain this Python error and give the exact fix.</task>
+<inputs>
+  <input>The nightly batch worker crashed. Relevant code and the full traceback are below.
+
+# worker.py (excerpt)
+async def process_batch(batch_id, records):
+    conn = await pool.acquire()
+    stats = {"ok": 0, "failed": 0}
+    for rec in records:
+        result = await upsert_record(conn, rec)
+        stats[result] += 1
+    await pool.release(conn)
+    return stats
+
+async def upsert_record(conn, rec):
+    try:
+        key = rec["customer"]["external_id"]
+    except KeyError:
+        return "skipped"
+    inserted = await conn.execute(UPSERT_SQL, key, rec["payload"])
+    return "ok" if inserted else "failed"
+
+Traceback (most recent call last):
+  File "/app/worker.py", line 31, in upsert_record
+    key = rec["customer"]["external_id"]
+          ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'external_id'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/app/main.py", line 88, in <module>
+    asyncio.run(run_nightly())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/main.py", line 52, in run_nightly
+    stats = await process_batch(batch_id, records)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/worker.py", line 19, in process_batch
+    stats[result] += 1
+    ~~~~~^^^^^^^^
+KeyError: 'skipped'
+
+Additional observation from ops: after several of these crashes the database
+started refusing new connections with "FATAL: too many clients already".
+</input>
+</inputs>
+<constraints>
+  <constraint>name the root cause in one sentence</constraint>
+  <constraint>show the corrected line(s)</constraint>
+  <constraint>be concise</constraint>
+</constraints>
+<output_format>root cause + corrected code</output_format>
+<note>structured XML: cause, fix, corrected snippet</note>

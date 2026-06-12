@@ -1,0 +1,74 @@
+<productionReadinessReview target="payments-api" verdict="FAIL">
+  <summary>Multiple critical blockers. Live secrets are committed in plaintext, the container runs privileged as root with the host Docker socket mounted, and there is no resilience, observability, or health-checking configuration. Do not deploy.</summary>
+
+  <category name="secrets" status="FAIL">
+    <item id="secrets-db-url" status="FAIL">
+      <finding>DATABASE_URL hardcodes a plaintext Postgres password (S3cretPass!) directly in the manifest env.</finding>
+      <remediation>Move to a Kubernetes Secret (or external vault/CSI driver) and inject via secretKeyRef.</remediation>
+    </item>
+    <item id="secrets-stripe-key" status="FAIL">
+      <finding>STRIPE_SECRET_KEY is a live (sk_live_) credential exposed in plaintext; anyone with manifest or API read access can exfiltrate it.</finding>
+      <remediation>Store in a Secret, rotate the key immediately since it has been committed, and reference via secretKeyRef.</remediation>
+    </item>
+    <item id="secrets-in-spec" status="FAIL">
+      <finding>Secrets live in the pod spec, so they are visible in `kubectl get deploy -o yaml`, in version control, and in audit logs.</finding>
+      <remediation>Never place credentials in env value:; use valueFrom.secretKeyRef and restrict RBAC on the Secret.</remediation>
+    </item>
+  </category>
+
+  <category name="logging" status="WARN">
+    <item id="logging-level" status="WARN">
+      <finding>LOG_LEVEL is set to DEBUG, which is too verbose for production and risks logging sensitive request/payment data.</finding>
+      <remediation>Set LOG_LEVEL to INFO (or WARN) in production and ensure PII/card data is never logged.</remediation>
+    </item>
+    <item id="logging-persistence" status="WARN">
+      <finding>App logs are written to an emptyDir volume, which is lost on pod restart/reschedule and is not aggregated.</finding>
+      <remediation>Log to stdout/stderr and collect via a cluster log pipeline (e.g. Fluent Bit) rather than ephemeral local storage.</remediation>
+    </item>
+  </category>
+
+  <category name="errorHandling" status="WARN">
+    <item id="errors-replicas" status="WARN">
+      <finding>replicas: 1 gives no redundancy; a single pod failure causes a full payments outage and blocks rolling updates.</finding>
+      <remediation>Run at least 2-3 replicas behind a PodDisruptionBudget and configure a rolling update strategy.</remediation>
+    </item>
+    <item id="errors-probes" status="FAIL">
+      <finding>No liveness or readiness probes are defined, so Kubernetes cannot detect a hung process or gate traffic until the app is ready.</finding>
+      <remediation>Add readinessProbe and livenessProbe (and a startupProbe if boot is slow) against a health endpoint.</remediation>
+    </item>
+    <item id="errors-resources" status="WARN">
+      <finding>No resource requests or limits; the container can be OOM-killed unpredictably or starve neighbours, harming reliability.</finding>
+      <remediation>Set CPU/memory requests and limits based on observed usage.</remediation>
+    </item>
+  </category>
+
+  <category name="inputValidation" status="WARN">
+    <item id="input-app-layer" status="WARN">
+      <finding>This is a deployment manifest, so application-level input validation cannot be confirmed from it; the payment API surface must be independently verified.</finding>
+      <remediation>Confirm request schema validation, authn/authz, and rate limiting exist in the service code and at the ingress/gateway layer.</remediation>
+    </item>
+    <item id="input-image-tag" status="FAIL">
+      <finding>Image uses the mutable :latest tag, so the deployed artifact is non-deterministic and cannot be reliably rolled back or audited.</finding>
+      <remediation>Pin to an immutable tag or digest (e.g. payments-api@sha256:...).</remediation>
+    </item>
+  </category>
+
+  <category name="security" status="FAIL">
+    <item id="sec-privileged" status="FAIL">
+      <finding>securityContext.privileged: true grants the container near-host-root capabilities; container escape compromises the node.</finding>
+      <remediation>Remove privileged; drop all capabilities and add back only what is required.</remediation>
+    </item>
+    <item id="sec-run-as-root" status="FAIL">
+      <finding>runAsUser: 0 runs the process as root inside the container, widening the blast radius of any RCE.</finding>
+      <remediation>Run as a non-root UID; set runAsNonRoot: true and a read-only root filesystem.</remediation>
+    </item>
+    <item id="sec-docker-sock" status="FAIL">
+      <finding>Mounting /var/run/docker.sock via hostPath gives the pod full control of the Docker daemon, equivalent to root on the host.</finding>
+      <remediation>Remove the docker.sock mount entirely; there is no legitimate reason for a payments API to access it.</remediation>
+    </item>
+    <item id="sec-nodeport" status="WARN">
+      <finding>Service type NodePort (30080) exposes the payments API on every node's external IP, bypassing ingress controls.</finding>
+      <remediation>Use ClusterIP behind an ingress/load balancer with TLS and network policies restricting access.</remediation>
+    </item>
+  </category>
+</productionReadinessReview>

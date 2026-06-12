@@ -1,0 +1,300 @@
+{
+  "name": "writing-pro",
+  "description": "Polish and reshape any piece of writing.",
+  "aliases": [
+    {
+      "petname": "proofread",
+      "intent": {
+        "goal": "Proofread this text for grammar, spelling, punctuation and clarity.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "corrected text then a change list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "rewrite-tone",
+      "intent": {
+        "goal": "Rewrite this text in a specified tone (ask which if unclear).",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "rewritten text"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "summarize",
+      "intent": {
+        "goal": "Summarize this text.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "tight summary, 3-5 sentences"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "expand",
+      "intent": {
+        "goal": "Expand this terse note into full, well-structured prose.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "expanded text"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "simplify",
+      "intent": {
+        "goal": "Rewrite this so a non-expert understands it.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "plain-English version"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "headline",
+      "intent": {
+        "goal": "Write 8 headline options for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered headline list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "hook",
+      "intent": {
+        "goal": "Write 5 opening hooks that make a reader keep going.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered hooks"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "tighten",
+      "intent": {
+        "goal": "Cut this text by ~40% without losing meaning.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "tightened text + word-count delta"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "paraphrase",
+      "intent": {
+        "goal": "Paraphrase this to avoid repetition while keeping meaning.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "paraphrased text"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "active-voice",
+      "intent": {
+        "goal": "Convert passive constructions to active voice.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "revised text"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "bulletize",
+      "intent": {
+        "goal": "Turn this prose into scannable bullet points.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "bulleted list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "title-ideas",
+      "intent": {
+        "goal": "Generate 10 title ideas for this piece.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered titles"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "grammar-fix",
+      "intent": {
+        "goal": "Fix only grammar and punctuation, change nothing else.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "corrected text"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "plain-english",
+      "intent": {
+        "goal": "Remove jargon and corporate-speak; say it plainly.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "de-jargoned text"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+<task>Write a conventional commit message for this git diff.</task>
+<inputs>
+  <input>diff --git a/src/app/auth.py b/src/app/auth.py
+index 3f1c2aa..9b04e11 100644
+--- a/src/app/auth.py
++++ b/src/app/auth.py
+@@ -1,38 +1,12 @@
+ """Authentication helpers."""
+-import time
+-import hmac
+-import hashlib
+-import secrets
+-
+-TOKEN_TTL = 3600
+-
+-
+-def mint_token(user_id: int, secret: bytes) -> str:
+-    expiry = int(time.time()) + TOKEN_TTL
+-    nonce = secrets.token_hex(8)
+-    msg = f"{user_id}:{expiry}:{nonce}".encode()
+-    sig = hmac.new(secret, msg, hashlib.sha256).hexdigest()
+-    return f"{user_id}:{expiry}:{nonce}:{sig}"
+-
+-
+-def verify_token(token: str, secret: bytes) -> int | None:
+-    try:
+-        user_id, expiry, nonce, sig = token.split(":")
+-    except ValueError:
+-        return None
+-    msg = f"{user_id}:{expiry}:{nonce}".encode()
+-    expected = hmac.new(secret, msg, hashlib.sha256).hexdigest()
+-    if not hmac.compare_digest(sig, expected):
+-        return None
+-    if int(expiry) < time.time():
+-        return None
+-    return int(user_id)
++from app.tokens import mint_token, verify_token
+
+
+ def login(store, username: str, password_hash: str, secret: bytes) -> str | None:
+     user = store.find_by_username(username)
+     if user is None or user.password_hash != password_hash:
+         return None
+     return mint_token(user.id, secret)
++
++
++__all__ = ["login", "mint_token", "verify_token"]
+diff --git a/src/app/tokens.py b/src/app/tokens.py
+new file mode 100644
+index 0000000..7d2a4c3
+--- /dev/null
++++ b/src/app/tokens.py
+@@ -0,0 +1,34 @@
++"""Token mint/verify — extracted from auth.py so the worker can verify
++tokens without importing the login path (which pulls in the user store)."""
++import time
++import hmac
++import hashlib
++import secrets
++
++TOKEN_TTL = 3600
++
++
++def mint_token(user_id: int, secret: bytes) -> str:
++    expiry = int(time.time()) + TOKEN_TTL
++    nonce = secrets.token_hex(8)
++    msg = f"{user_id}:{expiry}:{nonce}".encode()
++    sig = hmac.new(secret, msg, hashlib.sha256).hexdigest()
++    return f"{user_id}:{expiry}:{nonce}:{sig}"
++
++
++def verify_token(token: str, secret: bytes) -> int | None:
++    try:
++        user_id, expiry, nonce, sig = token.split(":")
++    except ValueError:
++        return None
++    msg = f"{user_id}:{expiry}:{nonce}".encode()
++    expected = hmac.new(secret, msg, hashlib.sha256).hexdigest()
++    if not hmac.compare_digest(sig, expected):
++        return None
++    if int(expiry) < time.time():
++        return None
++    return int(user_id)
+diff --git a/tests/test_auth.py b/tests/test_auth.py
+index c91b3ee..f02d771 100644
+--- a/tests/test_auth.py
++++ b/tests/test_auth.py
+@@ -1,6 +1,6 @@
+ import pytest
+-from app.auth import mint_token, verify_token
++from app.tokens import mint_token, verify_token
+
+ SECRET = b"test-secret"
+
+diff --git a/src/worker/verify.py b/src/worker/verify.py
+index 11aa22b..44cc55d 100644
+--- a/src/worker/verify.py
++++ b/src/worker/verify.py
+@@ -1,7 +1,7 @@
+ """Background worker — verifies tokens on queued jobs."""
+-from app.auth import verify_token
++from app.tokens import verify_token
+</input>
+</inputs>
+<constraints>
+  <constraint>conventional commits format</constraint>
+  <constraint>subject under 72 chars</constraint>
+  <constraint>imperative mood</constraint>
+</constraints>
+<output_format>subject line + optional body</output_format>
+<note>structured with subject, body, and breaking-change note if applicable</note>

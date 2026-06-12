@@ -1,0 +1,28 @@
+Here's a review of the metrics ingestion service, grouped into security issues, correctness bugs, and edge cases.
+
+## Security issues
+
+**Path traversal in `load_metric_file` (lines 13–17).** `client_id` and `filename` are concatenated into a filesystem path with `os.path.join` and no validation. Because these come from clients, a value like `filename="../../../etc/passwd"` escapes `DATA_DIR` and reads arbitrary files. Worse, if `filename` (or `client_id`) is an absolute path, `os.path.join` throws away everything before it, so `/etc/shadow` is read directly. Fix: reject path separators and `..`, then resolve the final path with `os.path.realpath` and confirm it still starts with `DATA_DIR` before opening.
+
+**`validate_name` doesn't actually constrain names (lines 9, 20–21).** Two problems. First, `re.match` only anchors at the start of the string, not the end, and the pattern `(\w+\.?)+` will match a leading run of word characters — so `"foo/bar"`, `"foo; drop"`, or `"foo\nbar"` all pass validation because they *start* with word characters. If `name` is later trusted as a filename or key, that's a hole. Use `re.fullmatch` with a precise pattern like `r"\w+(\.\w+)*"`. Second, the nested quantifier `(\w+\.?)+` is vulnerable to catastrophic backtracking (ReDoS): a long string of word characters ending in a non-matching char can hang the process. The `fullmatch` rewrite above also fixes this.
+
+**World-writable export file (line 56).** `os.chmod(out_path, 0o777)` makes the exported results readable and writable by every user on the host. Any local user can tamper with or read the metrics dump. Drop this to something like `0o600` (or `0o640` if a group needs read), or just remove the chmod and rely on the default umask.
+
+**`reset` is an unauthenticated data-wipe (lines 59–66).** The comment says the admin endpoint passes request data straight in. With `client_id=None` (the default), the whole cache is cleared — if a request can omit the parameter, anyone can wipe all metrics. With a value, deletion is done by `name.startswith(client_id)`, which is a prefix match over metric *names*, not an ownership check: passing `""` deletes everything, and a short prefix can delete other clients' data. Names should be namespaced per client (e.g. keyed by `(client_id, name)`), deletion scoped to the authenticated client, and the default should not be "clear everything."
+
+**Unbounded ingestion / no resource limits (lines 14–17, 30–31).** `json.load` reads the entire client-supplied file into memory with no size cap, and `_cache` grows without bound, so a client can exhaust memory (DoS). Enforce a maximum file size and bound/evict the cache.
+
+## Correctness bugs
+
+**File handle leak (lines 14–17).** `f = open(path)` is never closed, and if `json.load` raises, the descriptor leaks. Use `with open(path) as f:`.
+
+**`summary` blows up on missing or empty data (lines 40–47).** `_cache.get(name)` returns `None` for an unknown name, so `len(values)` raises `TypeError`. Even when the name exists, an empty list makes `sum(values) / len(values)` a `ZeroDivisionError` and `max(values)` a `ValueError`. Guard for `None`/empty and return something sensible (or raise a clear error).
+
+**`percentile` index can go out of range (lines 34–37).** `idx = int(len(values) * pct / 100)` equals `len(values)` when `pct == 100`, and rounding can push it to `len(values)` for high percentiles on small lists — either way `values[idx]` raises `IndexError`. Clamp the index to `len(values) - 1`, and handle the empty-list case up front.
+
+## Edge cases / robustness
+
+- **Malformed client JSON (lines 26–31).** `data["metrics"]`, `entry["name"]`, and `entry["value"]` all assume a specific shape; missing keys raise `KeyError`/`TypeError`. Validate the structure before iterating.
+- **Non-numeric and special float values (line 31).** `float(entry["value"])` raises `ValueError` on junk input, and it silently accepts `"NaN"`, `"inf"`, and `"-inf"`, which then corrupt `mean`, `p95`, and `max`. Reject non-finite values explicitly.
+- **Non-atomic export (lines 54–55).** Writing directly to `out_path` leaves a truncated file if the process dies mid-write. Write to a temp file and `os.replace` it into place.
+- **Name collisions across clients (line 30).** Because the cache is keyed only by metric name, two clients reporting `"latency"` are silently merged into the same bucket. Namespace by client.

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iceni"
+version = "0.1.0"
+description = "Auto-discovered, cross-model-calibrated, self-evolving prompt aliases for AI agents"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+  "click>=8.1",
+  "cryptography>=42",
+  "mcp>=1.0",      # Claude Desktop integration is the headline flow — core, not an extra
+]
+
+[project.optional-dependencies]
+models = ["anthropic>=0.40", "openai>=1.50"]   # run/compare against live models (GPT + Kimi share the openai client)
+discovery = ["sentence-transformers>=3.0", "hdbscan>=0.8", "scikit-learn>=1.4"]
+mcp = []                                       # kept for back-compat; mcp is now core
+all = ["iceni[models,discovery]"]
+
+[project.scripts]
+iceni = "iceni.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/iceni"]
+# .sql lives under src/iceni/sql/ and ships as package data automatically.

@@ -1,0 +1,66 @@
+<task>Audit these Python dependencies for security and maintenance risks.</task>
+<inputs>
+  <input># Production requirements — pinned 2019-08 by previous maintainer.
+# "Do not touch, prod is stable." Inherited by the platform team 2024.
+
+# --- web framework + WSGI stack ---
+django==2.2.0
+flask==0.12.2
+werkzeug==0.14.1
+jinja2==2.10
+gunicorn==19.9.0
+tornado==5.1
+
+# --- HTTP + networking ---
+requests==2.19.1
+urllib3==1.24.1
+httplib2==0.12.0
+websocket-client==0.54.0
+
+# --- data + persistence ---
+sqlalchemy==1.2.0
+psycopg2==2.7.5
+redis==3.2.0
+pymongo==3.7.0
+elasticsearch==6.3.1
+
+# --- async / task queue ---
+celery==4.2.0
+kombu==4.2.1
+billiard==3.5.0
+
+# --- serialization / parsing ---
+pyyaml==5.1
+lxml==4.6.0
+simplejson==3.16.0
+markdown==2.6.11
+
+# --- crypto / auth / ssh ---
+cryptography==2.9
+paramiko==2.4.1
+pyjwt==1.6.4
+oauthlib==2.1.0
+
+# --- imaging / scientific ---
+pillow==8.0.0
+numpy==1.16.0
+scipy==1.1.0
+
+# --- cloud SDK ---
+boto3==1.9.0
+botocore==1.12.0
+
+# --- misc utilities ---
+six==1.11.0
+python-dateutil==2.7.3
+pytz==2018.5
+click==6.7
+</input>
+</inputs>
+<constraints>
+  <constraint>flag known CVEs or pinned-low versions</constraint>
+  <constraint>flag unmaintained packages</constraint>
+  <constraint>rank by risk</constraint>
+</constraints>
+<output_format>risk table: package | version | risk | recommended action</output_format>
+<note>XML risk assessment with structured package elements</note>

@@ -1,0 +1,48 @@
+{
+  "name": "daily-dev",
+  "description": "Everyday helpers (neutral tier — consistency, not advantage): test-gen, error-explain, deploy-check.",
+  "aliases": [
+    {
+      "petname": "test-gen",
+      "intent": {
+        "goal": "Write unit tests for this function.",
+        "inputs": ["{{code}}"],
+        "constraints": ["cover edge cases and negative cases", "use pytest", "include a fixture if state needed"],
+        "outputs": {"format": "runnable pytest code"},
+        "style_hints": {
+          "claude": "XML-wrapped code block with a brief test strategy note",
+          "gpt": "markdown code block with test case comments",
+          "kimi": "just the code, no extra prose"
+        }
+      }
+    },
+    {
+      "petname": "error-explain",
+      "intent": {
+        "goal": "Explain this Python error and give the exact fix.",
+        "inputs": ["{{input}}"],
+        "constraints": ["name the root cause in one sentence", "show the corrected line(s)", "be concise"],
+        "outputs": {"format": "root cause + corrected code"},
+        "style_hints": {
+          "claude": "structured XML: cause, fix, corrected snippet",
+          "gpt": "numbered steps: 1. cause 2. fix 3. corrected code",
+          "kimi": "fix first, cause second - no preamble"
+        }
+      }
+    },
+    {
+      "petname": "deploy-check",
+      "intent": {
+        "goal": "Check this code for production readiness before deployment.",
+        "inputs": ["{{code}}"],
+        "constraints": ["check error handling, secrets, logging, input validation", "PASS/FAIL/WARN each category"],
+        "outputs": {"format": "checklist with status and one-line finding per item"},
+        "style_hints": {
+          "claude": "XML checklist with structured finding elements",
+          "gpt": "markdown checklist table: category | status | finding",
+          "kimi": "PASS/FAIL/WARN bullet list, no headers"
+        }
+      }
+    }
+  ]
+}

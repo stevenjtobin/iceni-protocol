@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<security_audit target="SessionMiddleware (internal admin panel)">
+  <summary>
+    The middleware deserializes attacker-controllable cookie data with pickle, gated only
+    by an MD5 keyed signature whose secret defaults to a hardcoded value. Combined, these
+    yield unauthenticated remote code execution. Several supporting weaknesses (error-path
+    data leak, spoofable IP trust, timing-unsafe comparison) compound the impact. Findings
+    are ranked by exploitability and severity below.
+  </summary>
+
+  <findings>
+
+    <finding id="1" severity="Critical" cvss="9.8" cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H" cwe="CWE-502">
+      <title>Deserialization of untrusted data via pickle.loads on the session cookie</title>
+      <location>line 30: environ["session"] = pickle.loads(base64.b64decode(raw))</location>
+      <description>
+        The "raw" portion of the session cookie is base64-decoded and passed directly to
+        pickle.loads. pickle is not a safe deserialization format: a crafted payload runs
+        arbitrary Python at load time via __reduce__. Although the code checks an MD5
+        signature first (finding #2), the signing key defaults to the publicly known value
+        "changeme" (finding #3). When that default is in effect, an attacker can forge both
+        "raw" and the matching signature and achieve unauthenticated remote code execution
+        on the admin panel host with the worker process's privileges.
+      </description>
+      <exploit_scenario>
+        Attacker computes raw = b64(pickle of a __reduce__ gadget invoking os.system),
+        sig = md5("changeme" + raw), and sends Cookie: session=&lt;raw&gt;.&lt;sig&gt;.
+        The middleware verifies the signature, calls pickle.loads, and executes the gadget.
+      </exploit_scenario>
+      <remediation>
+        Stop using pickle for session data. Serialize sessions as JSON (json.loads/dumps),
+        which cannot execute code. If arbitrary object graphs are genuinely required, use a
+        format with a strict allowlist and never deserialize attacker-controlled bytes. Do
+        not rely on the signature as the sole barrier in front of pickle.
+      </remediation>
+    </finding>
+
+    <finding id="2" severity="High" cvss="7.5" cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N" cwe="CWE-328">
+      <title>Weak hash (MD5) used as the session authentication primitive</title>
+      <location>lines 28 and 52: hashlib.md5((SECRET + raw).encode()).hexdigest()</location>
+      <description>
+        Session integrity relies on MD5. MD5 is cryptographically broken and is the wrong
+        tool for message authentication regardless. The construction md5(SECRET + raw) is a
+        keyed-prefix MAC, which is additionally vulnerable to length-extension attacks: an
+        attacker who observes one valid (raw, sig) pair can compute a valid signature for
+        raw || padding || suffix without knowing SECRET, forging a new session and bypassing
+        the only gate protecting the pickle deserializer (finding #1).
+      </description>
+      <remediation>
+        Replace with an HMAC over a strong hash, e.g. hmac.new(key, raw, hashlib.sha256),
+        and compare using hmac.compare_digest. Keys must be high-entropy random bytes, not
+        passwords. This eliminates both the broken-primitive and length-extension issues.
+      </remediation>
+    </finding>
+
+    <finding id="3" severity="High" cvss="8.6" cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N" cwe="CWE-798">
+      <title>Hardcoded default secret ("changeme")</title>
+      <location>line 9: SECRET = os.environ.get("SESSION_SECRET", "changeme")</location>
+      <description>
+        When SESSION_SECRET is unset, the signing key falls back to the publicly known
+        string "changeme". This is the linchpin that turns findings #1 and #2 from
+        theoretical into trivially exploitable: any attacker knowing the source (or simply
+        guessing a common default) can forge valid signatures and reach pickle.loads. Silent
+        fallback also means a misconfigured deploy looks healthy while being fully exploitable.
+      </description>
+      <remediation>
+        Remove the default. Read the secret and fail closed (raise / refuse to start) if it
+        is missing or weak. Require a minimum length of random bytes. Never ship a usable
+        fallback credential in source.
+      </remediation>
+    </finding>
+
+    <finding id="4" severity="High" cvss="7.5" cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N" cwe="CWE-209">
+      <title>Sensitive information disclosure on the error path</title>
+      <location>lines 33-35: returns f"session error: {e}\nheaders: {dict(environ)}"</location>
+      <description>
+        On any exception the handler returns the exception text and a full dump of the WSGI
+        environ to the client. The environ contains all request headers (Cookie, any
+        Authorization header, X-Forwarded-For), server configuration, and potentially other
+        secrets and internal paths. An attacker can deliberately trigger the exception (e.g.
+        malformed base64) to harvest this data, and the leak aids exploitation of the other
+        findings (e.g. confirming header handling, internal addresses).
+      </description>
+      <remediation>
+        Return a generic "500 Internal Server Error" body with no detail. Log the exception
+        server-side only. Never serialize environ/headers into a response.
+      </remediation>
+    </finding>
+
+    <finding id="5" severity="Medium" cvss="6.5" cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N" cwe="CWE-290">
+      <title>Authentication/trust decision based on spoofable X-Forwarded-For header</title>
+      <location>lines 18-22: client_ip from HTTP_X_FORWARDED_FOR, compared to IP_ALLOWLIST</location>
+      <description>
+        The "is_internal" trust flag is derived from the first entry of the client-supplied
+        X-Forwarded-For header. Unless a trusted proxy strips/overwrites this header, any
+        external client can send X-Forwarded-For: 127.0.0.1 to set is_internal = True and
+        be treated as an internal/admin caller. The allowlist itself is also malformed: it
+        contains the literal string "10.0.0.0/8 handled upstream" rather than a CIDR, and the
+        comparison is exact-string membership, so no CIDR matching actually occurs.
+      </description>
+      <remediation>
+        Derive the client IP only from the trusted hop (REMOTE_ADDR), or parse XFF only when
+        the immediate peer is a known proxy and take the correct rightmost untrusted entry.
+        Use a real IP/CIDR library (ipaddress) for allowlist checks. Do not let a request
+        header drive an authorization decision.
+      </remediation>
+    </finding>
+
+    <finding id="6" severity="Medium" cvss="5.9" cvss_vector="CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N" cwe="CWE-208">
+      <title>Non-constant-time signature comparison (timing side channel)</title>
+      <location>line 29: if sig == expected</location>
+      <description>
+        The signature is verified with Python's "==", which short-circuits on the first
+        differing byte. This leaks timing information that can, in principle, allow byte-by-
+        byte recovery of a valid signature for a chosen payload. Severity is lower here only
+        because the more direct forgery paths (#2 length extension, #3 known secret) usually
+        make a timing attack unnecessary, but it remains a real weakness.
+      </description>
+      <remediation>
+        Compare with hmac.compare_digest(sig, expected). Verify the signature before any
+        decoding/deserialization of the payload.
+      </remediation>
+    </finding>
+
+    <finding id="7" severity="Low" cvss="3.7" cvss_vector="CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N" cwe="CWE-565">
+      <title>No session integrity context (no expiry / binding) and reliance on cookie alone</title>
+      <location>lines 24-37, 49-53: session trust derived solely from a static signed cookie</location>
+      <description>
+        The signed cookie carries no expiration, issuance time, or binding to a user/IP. A
+        captured valid cookie is replayable indefinitely. There is also no HttpOnly/Secure/
+        SameSite enforcement visible at this layer, so the session cookie may be exposed to
+        JavaScript or sent over plaintext depending on how it is set elsewhere.
+      </description>
+      <remediation>
+        Include a signed expiry and rotate sessions; consider binding to a server-side
+        session id. Ensure the Set-Cookie for "session" uses HttpOnly, Secure, and an
+        appropriate SameSite attribute.
+      </remediation>
+    </finding>
+
+  </findings>
+
+  <remediation_priority>
+    <step order="1">Eliminate pickle for session data (use JSON) — closes the RCE (finding #1).</step>
+    <step order="2">Remove the hardcoded secret and fail closed when unset (finding #3).</step>
+    <step order="3">Replace MD5 keyed-prefix with HMAC-SHA256 + compare_digest (findings #2, #6).</step>
+    <step order="4">Stop leaking environ/exception detail on errors (finding #4).</step>
+    <step order="5">Fix IP trust to use REMOTE_ADDR / trusted-proxy XFF parsing with real CIDR checks (finding #5).</step>
+    <step order="6">Add session expiry/rotation and secure cookie attributes (finding #7).</step>
+  </remediation_priority>
+</security_audit>

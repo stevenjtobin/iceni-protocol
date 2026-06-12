@@ -1,0 +1,258 @@
+{
+  "name": "email-comms",
+  "description": "Draft and sharpen professional messages.",
+  "aliases": [
+    {
+      "petname": "email-reply",
+      "intent": {
+        "goal": "Draft a reply to this email.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "ready-to-send reply"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "follow-up",
+      "intent": {
+        "goal": "Write a polite follow-up to a message that got no response.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "short follow-up"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "cold-email",
+      "intent": {
+        "goal": "Write a concise cold outreach email for this goal.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "subject + body"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "decline",
+      "intent": {
+        "goal": "Politely decline this request while keeping the relationship.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "declining reply"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "apology-email",
+      "intent": {
+        "goal": "Write a sincere, non-grovelling apology email.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "apology email"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "intro-email",
+      "intent": {
+        "goal": "Write a warm double-opt-in introduction email.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "intro email"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "nudge",
+      "intent": {
+        "goal": "Write a friendly nudge that creates urgency without pressure.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "short nudge"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "thank-you",
+      "intent": {
+        "goal": "Write a specific, genuine thank-you message.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "thank-you note"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "status-update",
+      "intent": {
+        "goal": "Turn these notes into a crisp stakeholder status update.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "status update"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "ooo",
+      "intent": {
+        "goal": "Write an out-of-office auto-reply.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "OOO message"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "negotiation-email",
+      "intent": {
+        "goal": "Draft a firm-but-fair negotiation email.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "negotiation email"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "escalation-email",
+      "intent": {
+        "goal": "Write a measured escalation email stating impact and ask.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "escalation email"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    }
+  ]
+}

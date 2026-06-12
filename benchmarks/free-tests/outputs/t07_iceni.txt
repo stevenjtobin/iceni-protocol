@@ -1,0 +1,282 @@
+<dependency_audit>
+  <summary>
+    This requirements set was pinned in 2019-08 and left untouched for ~5 years. Nearly every
+    pin is multiple major/minor versions behind and carries one or more published CVEs. Several
+    packages have known remote-code-execution or authentication-bypass flaws. Two packages
+    (httplib2, simplejson here used as a stand-in parser) are effectively in maintenance-only mode,
+    and the python-dateutil/pytz/six trio is legacy-but-functional. Treat the whole file as a
+    standing liability: nothing should remain on these pins for new deployments. Critical items
+    below should be remediated immediately rather than on a normal upgrade cadence.
+  </summary>
+
+  <risk_table>
+    <header>package | version | risk | recommended action</header>
+
+    <package risk_rank="1" severity="critical">
+      <name>pyyaml</name>
+      <version>5.1</version>
+      <risk>CVE-2020-1747 / CVE-2020-14343 — full_load and FullLoader still allow arbitrary Python object construction, leading to arbitrary code execution when loading untrusted YAML. 5.1 predates the fixed loader behavior.</risk>
+      <recommended_action>Upgrade to >=5.4 (ideally latest 6.x) and switch all call sites to yaml.safe_load.</recommended_action>
+    </package>
+
+    <package risk_rank="2" severity="critical">
+      <name>django</name>
+      <version>2.2.0</version>
+      <risk>2.2.0 is missing the entire stream of 2.2.x security patches. Affected by SQL injection (CVE-2020-7471, CVE-2021-35042), account-takeover/credential issues, potential RCE via crafted query (CVE-2022-28346/28347), and many XSS/DoS fixes. The 2.2 LTS line is also end-of-life (EOL April 2022) — no further security support.</risk>
+      <recommended_action>Plan migration off EOL 2.2 to a supported LTS (4.2+). As an interim stopgap only, never run below the final 2.2.28 patch release.</recommended_action>
+    </package>
+
+    <package risk_rank="3" severity="critical">
+      <name>cryptography</name>
+      <version>2.9</version>
+      <risk>Bundles a vulnerable OpenSSL; affected by multiple CVEs including CVE-2020-25659 (Bleichenbacher timing) and the chain of OpenSSL CVEs patched in later wheels (e.g. CVE-2023-0286, CVE-2023-23931). Underpins TLS for requests/urllib3/paramiko, so a flaw here is broadly exploitable.</risk>
+      <recommended_action>Upgrade to a current release (>=42.x) to pick up patched OpenSSL; re-test paramiko and requests against it.</recommended_action>
+    </package>
+
+    <package risk_rank="4" severity="critical">
+      <name>lxml</name>
+      <version>4.6.0</version>
+      <risk>CVE-2021-43818 — the HTML cleaner can be bypassed, allowing crafted markup to smuggle script through and yield XSS. Also affected by CVE-2021-28957. 4.6.0 predates the fixes.</risk>
+      <recommended_action>Upgrade to >=4.6.5 (prefer latest 5.x). If using lxml.html.clean for sanitization, also move to the separate lxml_html_clean package and validate behavior.</recommended_action>
+    </package>
+
+    <package risk_rank="5" severity="high">
+      <name>django (transitive: werkzeug/jinja2 pairing)</name>
+      <version>see werkzeug/jinja2 rows</version>
+      <risk>Grouping note: the WSGI stack below compounds the Django risk — debugger, template, and dispatch flaws can chain.</risk>
+      <recommended_action>Upgrade the framework stack as a unit, not piecemeal.</recommended_action>
+    </package>
+
+    <package risk_rank="6" severity="high">
+      <name>werkzeug</name>
+      <version>0.14.1</version>
+      <risk>CVE-2019-14806 and later: the interactive debugger PIN protection is weak/bypassable, and multipart parsing is vulnerable to resource-exhaustion DoS (CVE-2023-25577). 0.14.1 is far behind. Debugger exposure can lead to RCE if ever enabled in prod.</risk>
+      <recommended_action>Upgrade to current (>=3.x with the Flask upgrade). Ensure debug mode is hard-disabled in production regardless.</recommended_action>
+    </package>
+
+    <package risk_rank="7" severity="high">
+      <name>flask</name>
+      <version>0.12.2</version>
+      <risk>0.12.2 predates fixes for cookie/session handling and depends on the vulnerable Werkzeug/Jinja2 pins above. Multiple years of security and stability fixes missing; not compatible with modern, patched dependencies.</risk>
+      <recommended_action>Upgrade to >=2.3 together with werkzeug and jinja2.</recommended_action>
+    </package>
+
+    <package risk_rank="8" severity="high">
+      <name>jinja2</name>
+      <version>2.10</version>
+      <risk>CVE-2019-10906 (sandbox escape via str.format) and CVE-2020-28493 (ReDoS in urlize). 2.10 is affected by both.</risk>
+      <recommended_action>Upgrade to >=2.11.3 (prefer 3.x with the Flask upgrade).</recommended_action>
+    </package>
+
+    <package risk_rank="9" severity="high">
+      <name>paramiko</name>
+      <version>2.4.1</version>
+      <risk>CVE-2018-7750 (auth handled before completing the SSH handshake — authentication bypass on server side) and CVE-2022-24302 (private-key file race / world-readable window). 2.4.1 is affected.</risk>
+      <recommended_action>Upgrade to >=2.10.1 (prefer latest 3.x).</recommended_action>
+    </package>
+
+    <package risk_rank="10" severity="high">
+      <name>requests</name>
+      <version>2.19.1</version>
+      <risk>CVE-2018-18074 (credentials leaked to the URL host on redirect) and the later CVE-2023-32681 (Proxy-Authorization header leaked over redirects to an HTTP target). 2.19.1 predates both fixes.</risk>
+      <recommended_action>Upgrade to >=2.31.0.</recommended_action>
+    </package>
+
+    <package risk_rank="11" severity="high">
+      <name>urllib3</name>
+      <version>1.24.1</version>
+      <risk>CVE-2019-11324 (cert verification weakened when merging pool settings), CVE-2019-11236 (CRLF injection in request path), and CVE-2021-33503 (ReDoS on crafted URL authority). All affect 1.24.1.</risk>
+      <recommended_action>Upgrade to >=1.26.18 (or 2.x after validating requests compatibility).</recommended_action>
+    </package>
+
+    <package risk_rank="12" severity="high">
+      <name>pillow</name>
+      <version>8.0.0</version>
+      <risk>Large cluster of image-parsing CVEs fixed after 8.0.0, including buffer overflows and DoS: CVE-2021-25287/25288 (out-of-bounds read in J2K), CVE-2021-34552 (buffer overflow via crafted image), CVE-2022-22817 (eval-based ImageMath RCE). Anything that decodes user-supplied images is exposed.</risk>
+      <recommended_action>Upgrade to the latest 10.x; never accept untrusted images on 8.0.0.</recommended_action>
+    </package>
+
+    <package risk_rank="13" severity="high">
+      <name>sqlalchemy</name>
+      <version>1.2.0</version>
+      <risk>CVE-2019-7164 / CVE-2019-7548 — SQL injection via the order_by / limit/offset relationship paths in the 1.2 line. Also years behind on bug/perf fixes and lacks 2.0-era hardening.</risk>
+      <recommended_action>Upgrade to a patched 1.3.x/1.4.x at minimum; plan for 2.x.</recommended_action>
+    </package>
+
+    <package risk_rank="14" severity="high">
+      <name>oauthlib</name>
+      <version>2.1.0</version>
+      <risk>CVE-2022-36087 — ReDoS via a crafted IPv6 URI / Authorization header in the OAuth flow. DoS against the auth path. 2.1.0 affected.</risk>
+      <recommended_action>Upgrade to >=3.2.1.</recommended_action>
+    </package>
+
+    <package risk_rank="15" severity="high">
+      <name>pyjwt</name>
+      <version>1.6.4</version>
+      <risk>CVE-2022-29217 — algorithm-confusion: a token can be verified under an unexpected algorithm, enabling signature bypass when key types are mixed. 1.6.4 also predates several hardening fixes.</risk>
+      <recommended_action>Upgrade to >=2.4.0 and explicitly pin allowed algorithms at every decode call.</recommended_action>
+    </package>
+
+    <package risk_rank="16" severity="medium">
+      <name>tornado</name>
+      <version>5.1</version>
+      <risk>CVE-2023-28370 (open redirect) and earlier cookie/multipart handling issues; also affected by HTTP request smuggling concerns fixed in later releases. 5.1 is well behind.</risk>
+      <recommended_action>Upgrade to >=6.3.3.</recommended_action>
+    </package>
+
+    <package risk_rank="17" severity="medium">
+      <name>celery</name>
+      <version>4.2.0</version>
+      <risk>CVE-2021-23727 (stored command injection via crafted task metadata when results are trusted). Pairs with old kombu/billiard; the 4.2 line is no longer maintained.</risk>
+      <recommended_action>Upgrade to 5.2.2+ together with kombu and billiard.</recommended_action>
+    </package>
+
+    <package risk_rank="18" severity="medium">
+      <name>kombu</name>
+      <version>4.2.1</version>
+      <risk>Tightly version-locked to Celery; old serialization defaults and transport fixes missing. Risk is mostly as a transitive enabler of the Celery issues, plus unmaintained on this line.</risk>
+      <recommended_action>Upgrade in lockstep with Celery 5.x (kombu >=5.2).</recommended_action>
+    </package>
+
+    <package risk_rank="19" severity="medium">
+      <name>billiard</name>
+      <version>3.5.0</version>
+      <risk>Celery's process pool; 3.5 is legacy and only relevant alongside the old Celery. No independent value in staying pinned this low.</risk>
+      <recommended_action>Upgrade alongside Celery (billiard >=3.6.4 / 4.x).</recommended_action>
+    </package>
+
+    <package risk_rank="20" severity="medium">
+      <name>pymongo</name>
+      <version>3.7.0</version>
+      <risk>CVE-2019-2391 (BSON parsing out-of-bounds read → DoS) addressed in later 3.x. Also predates TLS/SRV and driver-side hardening.</risk>
+      <recommended_action>Upgrade to >=3.12 (or 4.x after server-compat check).</recommended_action>
+    </package>
+
+    <package risk_rank="21" severity="medium">
+      <name>websocket-client</name>
+      <version>0.54.0</version>
+      <risk>CVE-2021-32812-adjacent issues: 0.54.0 does not verify the host against the certificate by default in some configurations and lacks later TLS/redirect hardening.</risk>
+      <recommended_action>Upgrade to >=1.2.0 and confirm TLS verification is enabled.</recommended_action>
+    </package>
+
+    <package risk_rank="22" severity="medium">
+      <name>numpy</name>
+      <version>1.16.0</version>
+      <risk>CVE-2019-6446 (insecure pickle-based loading in numpy.load default allow_pickle) and later buffer-overflow CVEs. Mostly impactful only when loading untrusted .npy data.</risk>
+      <recommended_action>Upgrade to a maintained 1.2x line; never load untrusted arrays with allow_pickle=True.</recommended_action>
+    </package>
+
+    <package risk_rank="23" severity="medium">
+      <name>httplib2</name>
+      <version>0.12.0</version>
+      <risk>CVE-2021-21240 (ReDoS via crafted header) affects 0.12.0. The library is effectively in low-maintenance mode; requests/httpx are preferred. Risk is DoS plus stagnation.</risk>
+      <recommended_action>Upgrade to >=0.19.0; longer term, migrate off httplib2 to requests/httpx.</recommended_action>
+    </package>
+
+    <package risk_rank="24" severity="medium">
+      <name>elasticsearch</name>
+      <version>6.3.1</version>
+      <risk>Client pinned to the 6.x cluster API; no CVE in the client itself, but it locks you to an EOL Elasticsearch 6 server line and lacks modern TLS defaults. Maintenance/compatibility risk.</risk>
+      <recommended_action>Upgrade the client to match a supported server (7.17+/8.x) as part of a coordinated cluster upgrade.</recommended_action>
+    </package>
+
+    <package risk_rank="25" severity="low">
+      <name>gunicorn</name>
+      <version>19.9.0</version>
+      <risk>Later releases fix HTTP request-smuggling handling (e.g. CVE-2024-1135 class of issues). 19.9.0 predates these. Behind a properly configured reverse proxy the exposure is reduced but not zero.</risk>
+      <recommended_action>Upgrade to >=22.0.0.</recommended_action>
+    </package>
+
+    <package risk_rank="26" severity="low">
+      <name>psycopg2</name>
+      <version>2.7.5</version>
+      <risk>No major standing CVE, but 2.7.5 lacks newer libpq/build fixes and wheels; consider psycopg2-binary only for dev. Primarily a staleness/compat concern.</risk>
+      <recommended_action>Upgrade to >=2.9.5.</recommended_action>
+    </package>
+
+    <package risk_rank="27" severity="low">
+      <name>redis</name>
+      <version>3.2.0</version>
+      <risk>redis-py client; no notable CVE in this version, but it predates SSL and connection-handling improvements and is several majors behind (current 5.x).</risk>
+      <recommended_action>Upgrade to >=4.5 (validate API changes around from_url/SSL).</recommended_action>
+    </package>
+
+    <package risk_rank="28" severity="low">
+      <name>scipy</name>
+      <version>1.1.0</version>
+      <risk>No prominent security CVE; risk is staleness and incompatibility with a modern numpy. Pinned 5+ years back.</risk>
+      <recommended_action>Upgrade in tandem with numpy to a maintained release.</recommended_action>
+    </package>
+
+    <package risk_rank="29" severity="low">
+      <name>markdown</name>
+      <version>2.6.11</version>
+      <risk>Old Python-Markdown; no headline CVE, but extension API and several rendering edge cases changed. If untrusted markdown is rendered to HTML, pair with a sanitizer regardless of version.</risk>
+      <recommended_action>Upgrade to >=3.4 and sanitize output (e.g. bleach/nh3) before serving.</recommended_action>
+    </package>
+
+    <package risk_rank="30" severity="low">
+      <name>boto3</name>
+      <version>1.9.0</version>
+      <risk>Very old AWS SDK; no client CVE, but missing newer service endpoints, regional/STS and signature improvements. Operational/compat risk.</risk>
+      <recommended_action>Upgrade boto3/botocore together to current.</recommended_action>
+    </package>
+
+    <package risk_rank="31" severity="low">
+      <name>botocore</name>
+      <version>1.12.0</version>
+      <risk>Lock-stepped with boto3 1.9.0; same staleness/compat exposure, including older TLS and endpoint data.</risk>
+      <recommended_action>Upgrade alongside boto3.</recommended_action>
+    </package>
+
+    <package risk_rank="32" severity="low">
+      <name>simplejson</name>
+      <version>3.16.0</version>
+      <risk>No significant CVE; stdlib json is now generally sufficient. Risk is redundancy/maintenance rather than security.</risk>
+      <recommended_action>Upgrade to current or drop in favor of stdlib json where possible.</recommended_action>
+    </package>
+
+    <package risk_rank="33" severity="low">
+      <name>click</name>
+      <version>6.7</version>
+      <risk>No security CVE; very old (current is 8.x). Pure staleness/compat; may block upgrades of tools that depend on click 8.</risk>
+      <recommended_action>Upgrade to >=8.1.</recommended_action>
+    </package>
+
+    <package risk_rank="34" severity="low">
+      <name>python-dateutil</name>
+      <version>2.7.3</version>
+      <risk>No notable CVE; functional but old. Low risk, upgrade for parser fixes.</risk>
+      <recommended_action>Upgrade to >=2.8.2.</recommended_action>
+    </package>
+
+    <package risk_rank="35" severity="low">
+      <name>pytz</name>
+      <version>2018.5</version>
+      <risk>Time-zone database is stale by ~6 years — DST/offset rules are out of date, which can cause incorrect local times rather than a security flaw.</risk>
+      <recommended_action>Upgrade to a current pytz, or migrate to zoneinfo (stdlib, Python 3.9+).</recommended_action>
+    </package>
+
+    <package risk_rank="36" severity="low">
+      <name>six</name>
+      <version>1.11.0</version>
+      <risk>Py2/3 compatibility shim; no CVE. Only meaningful if the codebase is still targeting Python 2, which is itself the real risk. Otherwise removable.</risk>
+      <recommended_action>Upgrade to 1.16.0; plan to remove once Python 2 support is dropped.</recommended_action>
+    </package>
+  </risk_table>
+
+  <unmaintained_or_eol>
+    <item package="django" version="2.2.0" note="2.2 LTS reached end-of-life April 2022 — no security support on this line."/>
+    <item package="httplib2" version="0.12.0" note="Low-maintenance; ecosystem has moved to requests/httpx."/>
+    <item package="celery" version="4.2.0" note="4.x line no longer maintained; 5.x is current."/>
+    <item package="six" version="1.11.0" note="Compatibility shim relevant only to Python 2, which is EOL."/>
+    <item package="elasticsearch" version="6.3.1" note="Tied to EOL Elasticsearch 6 server series."/>
+  </unmaintained_or_eol>
+
+  <remediation_priority>
+    <tier name="immediate" reason="RCE / injection / auth bypass">pyyaml, django, cryptography, lxml, paramiko, sqlalchemy, pyjwt</tier>
+    <tier name="high" reason="credential/cert leakage, XSS, image RCE, DoS">werkzeug, flask, jinja2, requests, urllib3, pillow, oauthlib</tier>
+    <tier name="scheduled" reason="DoS / smuggling / maintenance">tornado, celery, kombu, billiard, pymongo, websocket-client, numpy, httplib2, elasticsearch, gunicorn</tier>
+    <tier name="hygiene" reason="staleness / compat only">psycopg2, redis, scipy, markdown, boto3, botocore, simplejson, click, python-dateutil, pytz, six</tier>
+  </remediation_priority>
+</dependency_audit>

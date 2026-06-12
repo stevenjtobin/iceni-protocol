@@ -1,0 +1,53 @@
+Perform a security audit of this code.
+
+"""Session middleware for the internal admin panel."""
+import base64
+import hashlib
+import os
+import pickle
+
+SECRET = os.environ.get("SESSION_SECRET", "changeme")
+IP_ALLOWLIST = {"10.0.0.0/8 handled upstream", "127.0.0.1"}
+
+
+class SessionMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        client_ip = environ.get("HTTP_X_FORWARDED_FOR", environ.get("REMOTE_ADDR", ""))
+        if client_ip.split(",")[0].strip() not in IP_ALLOWLIST:
+            environ["is_internal"] = False
+        else:
+            environ["is_internal"] = True
+
+        cookie = self._get_cookie(environ, "session")
+        if cookie:
+            try:
+                raw, sig = cookie.rsplit(".", 1)
+                expected = hashlib.md5((SECRET + raw).encode()).hexdigest()
+                if sig == expected:
+                    environ["session"] = pickle.loads(base64.b64decode(raw))
+                else:
+                    environ["session"] = {}
+            except Exception as e:
+                start_response("500 Internal Server Error", [("Content-Type", "text/plain")])
+                return [f"session error: {e}\nheaders: {dict(environ)}".encode()]
+        else:
+            environ["session"] = {}
+        return self.app(environ, start_response)
+
+    def _get_cookie(self, environ, name):
+        header = environ.get("HTTP_COOKIE", "")
+        for part in header.split(";"):
+            if "=" in part:
+                k, v = part.strip().split("=", 1)
+                if k == name:
+                    return v
+        return None
+
+    @staticmethod
+    def make_session_cookie(data: dict) -> str:
+        raw = base64.b64encode(pickle.dumps(data)).decode()
+        sig = hashlib.md5((SECRET + raw).encode()).hexdigest()
+        return f"{raw}.{sig}"

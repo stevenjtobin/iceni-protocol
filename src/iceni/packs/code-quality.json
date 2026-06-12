@@ -1,0 +1,76 @@
+{
+  "name": "code-quality",
+  "description": "The proven structure-heavy winners: review, security-audit, api-review, refactor, docstring (+3 to +7 vs plain prompts on real code).",
+  "aliases": [
+    {
+      "petname": "review",
+      "intent": {
+        "goal": "Review this code for bugs, edge cases, and security issues.",
+        "inputs": ["{{code}}"],
+        "constraints": ["be concise", "cite line numbers", "flag security issues first"],
+        "outputs": {"format": "issues grouped by severity (critical/high/medium/low)"},
+        "style_hints": {
+          "claude": "use XML tags with severity attributes",
+          "gpt": "prioritized markdown table with CWE where applicable",
+          "kimi": "terse bullet points grouped by severity"
+        }
+      }
+    },
+    {
+      "petname": "security-audit",
+      "intent": {
+        "goal": "Perform a security audit of this code.",
+        "inputs": ["{{code}}"],
+        "constraints": ["focus on exploitable issues", "rank by severity", "map to CWE"],
+        "outputs": {"format": "findings with CWE, severity (CVSS-level), and remediation"},
+        "style_hints": {
+          "claude": "XML findings with CWE and CVSS score attributes",
+          "gpt": "markdown table: CWE | severity | description | remediation",
+          "kimi": "numbered findings, highest severity first"
+        }
+      }
+    },
+    {
+      "petname": "api-review",
+      "intent": {
+        "goal": "Review this API endpoint design for REST conventions and security gaps.",
+        "inputs": ["{{input}}"],
+        "constraints": ["check HTTP method, status codes, auth, error responses", "rank issues by severity"],
+        "outputs": {"format": "issue list with severity, description, and fix"},
+        "style_hints": {
+          "claude": "XML structured issues with severity attributes",
+          "gpt": "markdown issue table: issue | severity | fix",
+          "kimi": "direct numbered issue list"
+        }
+      }
+    },
+    {
+      "petname": "refactor",
+      "intent": {
+        "goal": "Refactor this code for clarity, safety, and maintainability.",
+        "inputs": ["{{code}}"],
+        "constraints": ["preserve exact behavior", "add type hints", "eliminate the obvious bug"],
+        "outputs": {"format": "refactored code then a brief change summary"},
+        "style_hints": {
+          "claude": "before/after in XML blocks with change rationale",
+          "gpt": "diff-style markdown then change list",
+          "kimi": "code first, then one-line per change"
+        }
+      }
+    },
+    {
+      "petname": "docstring",
+      "intent": {
+        "goal": "Write a Google-style docstring for this function.",
+        "inputs": ["{{code}}"],
+        "constraints": ["one-line summary first", "include Args, Returns, Raises", "note the known bug"],
+        "outputs": {"format": "docstring only, no surrounding code"},
+        "style_hints": {
+          "claude": "Google-style in an XML code block",
+          "gpt": "Google-style in a markdown code block",
+          "kimi": "compact Google docstring, no extra prose"
+        }
+      }
+    }
+  ]
+}

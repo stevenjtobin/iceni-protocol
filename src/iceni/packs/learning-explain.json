@@ -1,0 +1,258 @@
+{
+  "name": "learning-explain",
+  "description": "Learn or teach a concept fast.",
+  "aliases": [
+    {
+      "petname": "explain-concept",
+      "intent": {
+        "goal": "Explain this concept clearly with one good example.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "explanation + example"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "study-notes",
+      "intent": {
+        "goal": "Turn this into structured study notes.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "headed notes"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "quiz-me",
+      "intent": {
+        "goal": "Write 8 quiz questions (with answers) on this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "Q&A list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "analogy",
+      "intent": {
+        "goal": "Give 3 analogies that make this click.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered analogies"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "flashcards",
+      "intent": {
+        "goal": "Make flashcards (front/back) for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "card list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "prerequisites",
+      "intent": {
+        "goal": "List what I should understand before this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "ordered prerequisite list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "worked-example",
+      "intent": {
+        "goal": "Show a fully worked example of this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "step-by-step example"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "common-mistakes",
+      "intent": {
+        "goal": "List the common mistakes people make with this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "mistake list with fixes"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "mnemonic",
+      "intent": {
+        "goal": "Create a memorable mnemonic for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "mnemonic + how it maps"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "summary-tree",
+      "intent": {
+        "goal": "Give a hierarchical summary (topic \u2192 subpoints).",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "indented tree"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "teach-back",
+      "intent": {
+        "goal": "Explain this, then ask me 3 questions to check I got it.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "explanation + questions"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "glossary-build",
+      "intent": {
+        "goal": "Build a glossary of the key terms here.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "term: definition list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    }
+  ]
+}

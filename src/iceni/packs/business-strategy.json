@@ -1,0 +1,258 @@
+{
+  "name": "business-strategy",
+  "description": "Sharpen the commercial thinking.",
+  "aliases": [
+    {
+      "petname": "business-model",
+      "intent": {
+        "goal": "Sketch a business model for this idea.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "model summary"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "pricing-tiers",
+      "intent": {
+        "goal": "Propose pricing tiers for this product.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "tier table with rationale"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "competitor-scan",
+      "intent": {
+        "goal": "List likely competitors and how to differentiate.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "competitor list + edge"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "elevator-pitch",
+      "intent": {
+        "goal": "Write a 30-second elevator pitch for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "pitch"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "value-prop",
+      "intent": {
+        "goal": "Write a sharp value proposition for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "one-sentence value prop + support"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "positioning",
+      "intent": {
+        "goal": "Write a positioning statement (for X who Y, we are Z).",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "positioning statement"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "go-to-market",
+      "intent": {
+        "goal": "Outline a lean go-to-market plan.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "GTM steps"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "risk-register",
+      "intent": {
+        "goal": "List the top business risks and mitigations.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "risk table"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "okrs",
+      "intent": {
+        "goal": "Draft OKRs for this goal.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "objective + 3 key results"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "lean-canvas",
+      "intent": {
+        "goal": "Fill a lean canvas for this idea.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "canvas sections"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "moat-analysis",
+      "intent": {
+        "goal": "Assess what defensible moat this could build.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "moat analysis"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "persona",
+      "intent": {
+        "goal": "Write a sharp customer persona for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "persona profile"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    }
+  ]
+}

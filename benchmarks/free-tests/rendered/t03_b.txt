@@ -1,0 +1,71 @@
+Refactor this code for clarity, safety, and maintainability.
+
+"""Legacy report generation — callback style (pre-asyncio codebase, do not break callers)."""
+
+RESULTS = {}
+ERRORS = []
+
+
+def fetch_user(user_id, on_success, on_error):
+    try:
+        user = {"id": user_id, "name": "user_" + str(user_id), "active": 1}
+        on_success(user)
+    except Exception as e:
+        on_error(str(e))
+
+
+def fetch_orders(user, on_success, on_error):
+    try:
+        if user["active"] == 1:
+            orders = [{"id": i, "total": i * 9.99} for i in range(1, 4)]
+            on_success(user, orders)
+        else:
+            on_error("inactive user")
+    except Exception as e:
+        on_error(str(e))
+
+
+def fetch_invoices(user, orders, on_success, on_error):
+    try:
+        invoices = []
+        for o in orders:
+            if o["total"] > 0:
+                invoices.append({"order_id": o["id"], "amount": o["total"], "paid": 0})
+        on_success(invoices)
+    except Exception as e:
+        on_error(str(e))
+
+
+def generate_report(user_id, callback):
+    def step1(user):
+        def step2(user, orders):
+            def step3(invoices):
+                total = 0
+                for o in orders:
+                    total = total + o["total"]
+                report = {
+                    "user": user["name"],
+                    "orders": len(orders),
+                    "invoiced": len(invoices),
+                    "total": total,
+                }
+                RESULTS[user_id] = report
+                callback(report, None)
+
+            def step3_err(msg):
+                ERRORS.append(msg)
+                callback(None, msg)
+
+            fetch_invoices(user, orders, step3, step3_err)
+
+        def step2_err(msg):
+            ERRORS.append(msg)
+            callback(None, msg)
+
+        fetch_orders(user, step2, step2_err)
+
+    def step1_err(msg):
+        ERRORS.append(msg)
+        callback(None, msg)
+
+    fetch_user(user_id, step1, step1_err)

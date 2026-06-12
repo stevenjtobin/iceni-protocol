@@ -1,0 +1,258 @@
+{
+  "name": "document-data",
+  "description": "Wrangle documents and messy text.",
+  "aliases": [
+    {
+      "petname": "extract-fields",
+      "intent": {
+        "goal": "Extract the structured fields from this text as JSON.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "JSON object"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "table-from-text",
+      "intent": {
+        "goal": "Turn this unstructured text into a table.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "markdown table"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "meeting-notes",
+      "intent": {
+        "goal": "Turn this transcript into clean meeting notes.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "notes + decisions + actions"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "action-items",
+      "intent": {
+        "goal": "Pull just the action items from this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "owner: action list"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "summarize-thread",
+      "intent": {
+        "goal": "Summarize this long thread into the gist + decisions.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "summary + decisions"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "redact-pii",
+      "intent": {
+        "goal": "Redact personal/sensitive info from this text.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "redacted text"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "translate",
+      "intent": {
+        "goal": "Translate this, preserving tone and formatting.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "translation"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "format-clean",
+      "intent": {
+        "goal": "Clean up the formatting and whitespace of this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "cleaned text"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "faq-from-doc",
+      "intent": {
+        "goal": "Generate an FAQ from this document.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "Q&A list"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "outline-from-notes",
+      "intent": {
+        "goal": "Turn these rough notes into a clean outline.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "outline"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "compare-docs",
+      "intent": {
+        "goal": "Compare these two texts and list the differences.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "difference list"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    },
+    {
+      "petname": "timeline",
+      "intent": {
+        "goal": "Extract a chronological timeline from this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "one row per item",
+          "rank by importance"
+        ],
+        "outputs": {
+          "format": "dated timeline"
+        },
+        "style_hints": {
+          "claude": "XML rows with attributes",
+          "gpt": "markdown table",
+          "kimi": "compact list, highest-priority first"
+        }
+      }
+    }
+  ]
+}

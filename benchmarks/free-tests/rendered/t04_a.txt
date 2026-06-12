@@ -1,0 +1,67 @@
+<task>Write a Google-style docstring for this function.</task>
+<inputs>
+  <input>"""Feature pipeline used by the churn model trainer."""
+import numpy as np
+
+
+class FeaturePipeline:
+    def __init__(self, numeric_cols, categorical_cols, clip_percentile=99):
+        self.numeric_cols = numeric_cols
+        self.categorical_cols = categorical_cols
+        self.clip_percentile = clip_percentile
+        self.means_ = {}
+        self.stds_ = {}
+        self.clip_values_ = {}
+        self.category_maps_ = {}
+        self.fitted = False
+
+    def fit_transform(self, df, target_col=None):
+        # NOTE: known bug — statistics are computed on the FULL dataframe
+        # before the caller does the train/test split, so test-set values
+        # leak into the scaler. Kept for backward compatibility with the
+        # v1 model artifacts; fix scheduled for v2.
+        out = df.copy()
+        for col in self.numeric_cols:
+            values = out[col].astype(float)
+            self.clip_values_[col] = np.percentile(values, self.clip_percentile)
+            values = values.clip(upper=self.clip_values_[col])
+            self.means_[col] = values.mean()
+            self.stds_[col] = values.std() or 1.0
+            out[col] = (values - self.means_[col]) / self.stds_[col]
+        for col in self.categorical_cols:
+            categories = sorted(out[col].dropna().unique().tolist())
+            self.category_maps_[col] = {c: i for i, c in enumerate(categories)}
+            out[col] = out[col].map(self.category_maps_[col]).fillna(-1).astype(int)
+        if target_col is not None:
+            out = out.dropna(subset=[target_col])
+        self.fitted = True
+        return out
+
+    def transform(self, df):
+        if not self.fitted:
+            raise RuntimeError("call fit_transform first")
+        out = df.copy()
+        for col in self.numeric_cols:
+            values = out[col].astype(float).clip(upper=self.clip_values_[col])
+            out[col] = (values - self.means_[col]) / self.stds_[col]
+        for col in self.categorical_cols:
+            out[col] = out[col].map(self.category_maps_[col]).fillna(-1).astype(int)
+        return out
+
+    def save(self, path):
+        state = {
+            "means": self.means_,
+            "stds": self.stds_,
+            "clips": self.clip_values_,
+            "cats": self.category_maps_,
+        }
+        np.save(path, state, allow_pickle=True)
+</input>
+</inputs>
+<constraints>
+  <constraint>one-line summary first</constraint>
+  <constraint>include Args, Returns, Raises</constraint>
+  <constraint>note the known bug</constraint>
+</constraints>
+<output_format>docstring only, no surrounding code</output_format>
+<note>Google-style in an XML code block</note>

@@ -1,0 +1,279 @@
+{
+  "name": "marketing-content",
+  "description": "Produce on-brief marketing content.",
+  "aliases": [
+    {
+      "petname": "blog-outline",
+      "intent": {
+        "goal": "Outline an SEO-aware blog post on this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "H2/H3 outline"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "seo-brief",
+      "intent": {
+        "goal": "Write a content brief: intent, keywords, angle, structure.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "content brief"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "social-post",
+      "intent": {
+        "goal": "Write 3 social posts for this, platform-appropriate.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered posts"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "ad-copy",
+      "intent": {
+        "goal": "Write 5 ad-copy variations for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered variations"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "product-desc",
+      "intent": {
+        "goal": "Write a benefit-led product description.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "product description"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "email-campaign",
+      "intent": {
+        "goal": "Draft a 3-email nurture sequence for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "3 emails"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "landing-copy",
+      "intent": {
+        "goal": "Write landing-page copy: headline, subhead, bullets, CTA.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "landing sections"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "cta-ideas",
+      "intent": {
+        "goal": "Write 10 call-to-action options.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered CTAs"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "content-calendar",
+      "intent": {
+        "goal": "Draft a 2-week content calendar for this theme.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "calendar table"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "newsletter",
+      "intent": {
+        "goal": "Draft a newsletter issue from these notes.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "newsletter draft"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "video-script",
+      "intent": {
+        "goal": "Write a 60-second video script for this.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "script with shot notes"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "hashtags",
+      "intent": {
+        "goal": "Suggest relevant, non-spammy hashtags.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "grouped hashtag list"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    },
+    {
+      "petname": "hook-lines",
+      "intent": {
+        "goal": "Write 8 scroll-stopping first lines.",
+        "inputs": [
+          "{{input}}"
+        ],
+        "constraints": [
+          "be specific and actionable",
+          "no filler or preamble"
+        ],
+        "outputs": {
+          "format": "numbered hooks"
+        },
+        "style_hints": {
+          "claude": "clear sections, XML tags where structure aids parsing",
+          "gpt": "clean markdown with headers and bullets",
+          "kimi": "concise, no preamble"
+        }
+      }
+    }
+  ]
+}
