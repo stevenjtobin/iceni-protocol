@@ -71,6 +71,8 @@ iceni init
 
 This creates a local store in `~/.iceni/` (never committed, never shared).
 
+> **Your data stays local.** ICENI makes no network calls unless you explicitly set an API key and run `--execute`. No telemetry, no cloud sync, no passive collection of your conversations. The auto-discovery command (`iceni discover`) is manual and opt-in — it reads your local Claude Code logs only when you ask it to, proposes candidates, and signs nothing until you approve. You can delete `~/.iceni/` at any time to reset completely.
+
 ### Step 3 — Install a workflow pack
 
 ```bash
