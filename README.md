@@ -1,5 +1,6 @@
 # ICENI Protocol
 
+[![PyPI](https://img.shields.io/pypi/v/iceni)](https://pypi.org/project/iceni/)
 [![CI](https://github.com/stevenjtobin/iceni-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/stevenjtobin/iceni-protocol/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -52,9 +53,12 @@ The core features — create, list, show, export, import — work **completely o
 ### Step 1 — Install
 
 ```bash
-git clone https://github.com/stevenjtobin/iceni-protocol.git
-cd iceni-protocol
-pip install -e .
+pip install iceni
+```
+
+That's it. To call live models (optional), install the extras:
+```bash
+pip install "iceni[all]"     # adds Anthropic + OpenAI SDKs and discovery
 ```
 
 Verify it works:
@@ -62,6 +66,16 @@ Verify it works:
 iceni --version
 iceni doctor
 ```
+
+<details>
+<summary>Install from source instead (for development)</summary>
+
+```bash
+git clone https://github.com/stevenjtobin/iceni-protocol.git
+cd iceni-protocol
+pip install -e ".[all]"
+```
+</details>
 
 ### Step 2 — Initialise your library
 
@@ -248,7 +262,7 @@ site/               landing page (index.html)
 - [x] 208-workflow library (19 packs)
 - [x] Auto-discovery (cluster recurring prompts from conversation logs)
 - [x] Outcome tracking + usage stats
-- [ ] PyPI release (`pip install iceni`)
+- [x] PyPI release (`pip install iceni`)
 - [ ] GPT / Kimi auto-calibration from live execution feedback
 - [ ] Drift detection (alert when a workflow's output style shifts)
 - [ ] Pack marketplace
