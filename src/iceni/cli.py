@@ -482,6 +482,71 @@ def connect_desktop() -> None:
     click.echo("(Your top 3 also work directly, e.g. /review.)")
 
 
+@cli.command(name="connect-code")
+def connect_code() -> None:
+    """Wire ICENI into Claude Code automatically (installs the skill + auto-trigger hook).
+
+    Works on any machine — Windows, macOS, or a Linux VPS. Run it once per machine
+    after `pip install iceni`, and ICENI auto-triggers on matching tasks with no
+    /iceni typing. Idempotent and preserves your other Claude Code settings.
+    """
+    import shutil
+    import sys
+    from importlib import resources
+
+    claude_dir = Path.home() / ".claude"
+    skill_dir = claude_dir / "skills" / "iceni"
+    hooks_dir = claude_dir / "hooks"
+    skill_dir.mkdir(parents=True, exist_ok=True)
+    hooks_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Skill — makes Claude Code auto-select ICENI for matching tasks.
+    assets = resources.files("iceni.integrations")
+    (skill_dir / "SKILL.md").write_text(
+        assets.joinpath("SKILL.md").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+
+    # 2. Auto-trigger hook — fires on every prompt, injects the calibrated prompt
+    #    on a match. The bundled hook is path-independent (uses this interpreter).
+    hook_path = hooks_dir / "iceni_auto.py"
+    hook_path.write_text(
+        assets.joinpath("hook.py").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+
+    # 3. Register the hook in settings.json — idempotent, preserves other settings.
+    settings_path = claude_dir / "settings.json"
+    settings: dict = {}
+    if settings_path.exists():
+        try:
+            settings = json.loads(settings_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            raise click.ClickException(
+                f"{settings_path} exists but is not valid JSON — fix or remove it first"
+            )
+        shutil.copy2(settings_path, settings_path.with_suffix(".json.bak"))
+
+    command = f'"{sys.executable}" "{hook_path}"'
+    ups = settings.setdefault("hooks", {}).setdefault("UserPromptSubmit", [])
+    # Drop any prior ICENI hook entries so re-running never duplicates or leaves
+    # a stale interpreter/path behind.
+    ups[:] = [
+        e for e in ups
+        if not any("iceni_auto" in (h.get("command") or "") for h in e.get("hooks", []))
+    ]
+    ups.append({"matcher": "", "hooks": [{"type": "command", "command": command}]})
+    settings_path.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+
+    click.echo(f"✓ ICENI wired into Claude Code  ({claude_dir})")
+    click.echo(f"  skill   {skill_dir / 'SKILL.md'}")
+    click.echo(f"  hook    {hook_path}")
+    click.echo(f"  config  {settings_path}")
+    if settings_path.with_suffix(".json.bak").exists():
+        click.echo(f"  backup  {settings_path.with_suffix('.json.bak').name}")
+    click.echo("\nRestart Claude Code, then just work naturally — ICENI auto-triggers on")
+    click.echo("review / audit / refactor / test / debug / docs / email / summarise tasks.")
+    click.echo("Turn it off any time:  create the file  ~/.iceni/hook.disabled")
+
+
 @cli.command(name="stats")
 def stats_cmd() -> None:
     """Per-alias adoption dashboard: uses · accepted/edited/rejected · parse-fit (observe, don't tune)."""

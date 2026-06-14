@@ -23,7 +23,7 @@ It won't make the model smarter. It will save you from retyping the same 60-word
 | **Writer / marketer** | `blog-outline`, `email-reply`, `summarize` with your house style baked in |
 | **Analyst / researcher** | `research-brief`, `compare`, `decisions` with consistent format to feed into pipelines |
 | **Team lead** | Export a signed alias, the whole team imports it — one standard, signature-verified |
-| **Claude Code user** | `/iceni` inside Claude Code runs your full workflow library in the terminal |
+| **Claude Code user** | **Auto-triggers** on review / refactor / test / debug tasks — just work naturally, no `/iceni` needed |
 
 ---
 
@@ -32,7 +32,7 @@ It won't make the model smarter. It will save you from retyping the same 60-word
 | Platform | Integration | Status |
 |---|---|---|
 | **Claude Desktop** | MCP server — workflows appear under `+` → Connectors → `iceni` | ✅ Tested |
-| **Claude Code** | Skill (`/iceni`) + CLI via `python -m iceni` | ✅ Tested |
+| **Claude Code** | **Auto-trigger** skill + hook (`iceni connect-code`) — hands-free, or `/iceni` | ✅ Tested |
 | **ChatGPT** | CLI with `--model gpt` (OpenAI API key required) | ✅ Tested |
 | **Kimi (Moonshot)** | CLI with `--model kimi` (Moonshot API key required) | ✅ Tested |
 | **Any OpenAI-compatible API** | Set `OPENAI_API_KEY` + base URL | Works offline, render only |
@@ -96,28 +96,54 @@ iceni pack install all       # or install everything at once
 iceni list                   # confirm they're there
 ```
 
-### Step 4 — Connect to Claude Desktop (optional)
+### Step 4 — Connect to Claude (pick one or both)
 
+**Claude Code (hands-free — recommended):**
+```bash
+iceni connect-code
+```
+Installs the ICENI skill + an auto-trigger hook, then restart Claude Code. After that you **just work naturally** — say *"review this function"* or *"write tests for this"* and ICENI fires automatically with the right calibrated workflow. No `/iceni` typing. (You can still type `/iceni` to browse the menu.)
+
+**Claude Desktop:**
 ```bash
 iceni connect-desktop
 ```
+Restart Claude Desktop → click **`+`** (bottom-left) → **Connectors** → **`iceni`**. Pick a workflow, paste your content, done.
 
-Restart Claude Desktop → click **`+`** (bottom-left) → **Connectors** → **`iceni`**. Your workflows appear. Pick one, paste your content, done.
+> **Can't find it in Desktop?** Make sure you restarted after running `connect-desktop`. The `+` button is in the chat input bar, not the sidebar.
 
-> **Can't find it?** Make sure you restarted Claude Desktop after running `connect-desktop`. The `+` button is in the chat input bar, not the sidebar.
+> **Works on any machine.** `connect-code` writes the right config for whatever OS it runs on — including a Linux VPS you SSH into. Just `pip install iceni && iceni connect-code` there too. (ICENI config lives in local files; it doesn't follow your account across machines.)
 
 ### Step 5 — Try your first workflow
 
-**In the terminal (no AI key needed — preview only):**
+**Hands-free (Claude Code, after `connect-code`):** just type *"review this code"* and paste it — ICENI auto-triggers.
+
+**Terminal (no AI key needed — preview only):**
 ```bash
 iceni run review examples/buggy_example.py --preview --model claude
 ```
 
-**In Claude Desktop:** Click `+` → Connectors → `iceni` → choose `security-audit` → paste any code.
+**Claude Desktop:** Click `+` → Connectors → `iceni` → choose `security-audit` → paste any code.
 
-**In Claude Code:** Type `/iceni` and pick a workflow from the menu.
+> **Turn auto-trigger off any time:** create the file `~/.iceni/hook.disabled` (delete it to re-enable). No restart needed.
 
 ---
+
+## How hands-free mode works
+
+`iceni connect-code` installs two small, local pieces into `~/.claude/`:
+
+1. **A skill** (`skills/iceni/SKILL.md`) — tells Claude Code to reach for ICENI whenever your request matches a saved workflow (review, refactor, test, debug, docs, email, summarise, …).
+2. **An auto-trigger hook** (`hooks/iceni_auto.py`) — runs on each message. If it sees a task that maps to a workflow, it fetches the calibrated prompt and hands it to Claude. Otherwise it stays completely silent.
+
+It's deliberately conservative and safe:
+
+- **Fail-safe** — any error exits silently; the hook can never block or break your prompt.
+- **No injection surface** — workflow names come from a fixed allow-list, never from your message text.
+- **Private** — it only reads the message you just typed; no scanning of past conversations, no network calls.
+- **Kill switch** — `touch ~/.iceni/hook.disabled` turns it off instantly (delete to re-enable).
+
+Nothing is account-synced — these are plain files on the machine where you run `connect-code`, which is why you run it once per machine (laptop, desktop, VPS).
 
 ## The 208-workflow library
 
@@ -176,6 +202,7 @@ iceni pack list                # browse all 19 packs
 iceni pack install <name>      # add a pack
 iceni export <name>            # portable signed alias file
 iceni import <name>.iceni      # verified install from a file
+iceni connect-code             # wire into Claude Code (auto-trigger skill + hook)
 iceni connect-desktop          # wire into Claude Desktop automatically
 iceni mcp                      # start the MCP stdio server manually (for debugging)
 iceni doctor                   # check config + which model keys are set
