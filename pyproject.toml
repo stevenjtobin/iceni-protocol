@@ -19,6 +19,7 @@ dependencies = [
 models = ["anthropic>=0.40", "openai>=1.50"]   # run/compare against live models (GPT + Kimi share the openai client)
 discovery = ["sentence-transformers>=3.0", "hdbscan>=0.8", "scikit-learn>=1.4"]
 mcp = []                                       # kept for back-compat; mcp is now core
+dev = ["pytest>=8"]                            # test runner (CI + contributors)
 all = ["iceni[models,discovery]"]
 
 [project.scripts]

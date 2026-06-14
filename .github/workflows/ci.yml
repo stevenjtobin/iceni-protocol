@@ -26,7 +26,7 @@ jobs:
           cache: pip
 
       - name: Install ICENI
-        run: pip install -e ".[all]"
+        run: pip install -e ".[all,dev]"
 
       - name: Initialise local store
         run: iceni init
