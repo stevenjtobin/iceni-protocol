@@ -16,7 +16,7 @@ jobs:
     permissions:
       id-token: write          # REQUIRED for OIDC trusted publishing
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0        # full history + tags so hatch-vcs can derive the version
 
