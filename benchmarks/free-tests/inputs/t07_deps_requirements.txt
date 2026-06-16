@@ -34,7 +34,7 @@ simplejson==3.16.0
 markdown==2.6.11
 
 # --- crypto / auth / ssh ---
-cryptography==2.9
+cryptography==48.0.1
 paramiko==2.4.1
 pyjwt==1.6.4
 oauthlib==2.1.0
