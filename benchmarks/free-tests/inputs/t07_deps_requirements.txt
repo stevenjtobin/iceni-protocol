@@ -41,7 +41,7 @@ oauthlib==2.1.0
 
 # --- imaging / scientific ---
 pillow==8.0.0
-numpy==1.16.0
+numpy==1.22.0
 scipy==1.1.0
 
 # --- cloud SDK ---
