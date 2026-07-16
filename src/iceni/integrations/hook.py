@@ -16,6 +16,8 @@ SAFETY:
   * No untrusted execution: workflow names come from a fixed allow-list, never
     from raw user input — a crafted message cannot inject a command.
   * Bounded: short subprocess timeouts + a cap on injected output size.
+  * Precise: only the user's own instruction is matched, never pasted content
+    (see instruction_zone) — an incidental word in a quoted log must not fire.
 """
 import json
 import os
@@ -31,6 +33,14 @@ PYTHON = os.environ.get("ICENI_PYTHON", sys.executable)
 ICENI = [PYTHON, "-m", "iceni"]
 
 MAX_INJECT_CHARS = 4000   # never dump more than this into the context
+
+# A request's intent lives in the opening prose ("review this:"), not deep inside
+# whatever the user pasted underneath. Matching the whole message means a stray
+# word in a quoted transcript or log fires the wrong workflow — e.g. "Disk
+# Clean-up" mentioned in passing matching `refactor`. So intent is only ever read
+# from the leading prose, with fenced blocks stripped out.
+FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
+INSTRUCTION_CHARS = 400
 
 TASK_SIGNALS = [
     r"```",
@@ -72,6 +82,11 @@ def is_disabled() -> bool:
     except Exception:
         pass
     return False
+
+
+def instruction_zone(text: str) -> str:
+    """The user's own request: leading prose, with pasted code blocks removed."""
+    return FENCE_RE.sub(" ", text)[:INSTRUCTION_CHARS]
 
 
 def has_task_signal(text: str) -> bool:
@@ -116,10 +131,16 @@ def run() -> None:
         return
 
     prompt = data.get("prompt", "")
-    if not prompt or not has_task_signal(prompt):
+    if not prompt:
         return
 
-    workflow = match_workflow(prompt)
+    # Read intent from the user's instruction only — a pasted transcript must
+    # never trigger a workflow, and it must never inflate the usage stats.
+    zone = instruction_zone(prompt)
+    if not (has_task_signal(zone) or "```" in prompt):
+        return
+
+    workflow = match_workflow(zone)
     if not workflow:
         return
 
