@@ -40,7 +40,7 @@ pyjwt==1.6.4
 oauthlib==2.1.0
 
 # --- imaging / scientific ---
-pillow==8.0.0
+pillow==12.3.0
 numpy==1.16.0
 scipy==1.1.0
 
