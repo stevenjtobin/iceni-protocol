@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0        # full history + tags so hatch-vcs can derive the version
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
