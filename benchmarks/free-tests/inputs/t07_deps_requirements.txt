@@ -2,7 +2,7 @@
 # "Do not touch, prod is stable." Inherited by the platform team 2024.
 
 # --- web framework + WSGI stack ---
-django==2.2.0
+django==5.2.16
 flask==0.12.2
 werkzeug==0.14.1
 jinja2==2.10
