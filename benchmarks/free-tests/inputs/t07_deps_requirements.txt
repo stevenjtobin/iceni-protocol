@@ -7,7 +7,7 @@ flask==0.12.2
 werkzeug==0.14.1
 jinja2==2.10
 gunicorn==19.9.0
-tornado==5.1
+tornado==6.5.8
 
 # --- HTTP + networking ---
 requests==2.19.1
